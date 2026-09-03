@@ -1,61 +1,67 @@
 {
-  "id": "about",
-  "type": "SharedSlice",
-  "name": "About",
   "description": "Prose column beside a scrolling image column",
+  "id": "about",
+  "name": "About",
+  "type": "SharedSlice",
   "variations": [
     {
-      "id": "default",
-      "name": "Default",
-      "docURL": "...",
-      "version": "initial",
       "description": "Default",
+      "docURL": "...",
+      "id": "default",
       "imageUrl": "",
+      "items": {},
+      "name": "Default",
       "primary": {
         "surface": {
-          "type": "Select",
           "config": {
+            "default_value": "blush",
             "label": "Surface",
-            "placeholder": "Background this section sits on",
-            "options": ["blush", "ink"],
-            "default_value": "blush"
-          }
+            "options": [
+              "blush",
+              "ink"
+            ],
+            "placeholder": "Background this section sits on"
+          },
+          "type": "Select"
         },
         "paragraphs": {
-          "type": "Group",
           "config": {
-            "label": "Paragraphs",
             "fields": {
               "text": {
-                "type": "StructuredText",
                 "config": {
                   "label": "Text",
                   "placeholder": "One paragraph of the about story",
                   "single": "paragraph,strong,em,hyperlink"
-                }
+                },
+                "type": "StructuredText"
               }
-            }
-          }
+            },
+            "label": "Paragraphs"
+          },
+          "type": "Group"
         },
         "images": {
-          "type": "Group",
           "config": {
-            "label": "Images",
             "fields": {
               "image": {
-                "type": "Image",
                 "config": {
+                  "constraint": {
+                    "height": 1440,
+                    "width": 1080
+                  },
                   "label": "Image",
                   "placeholder": "Portrait crop, roughly 3:4",
-                  "constraint": { "width": 1080, "height": 1440 },
                   "thumbnails": []
-                }
+                },
+                "type": "Image"
               }
-            }
-          }
+            },
+            "label": "Images"
+          },
+          "type": "Group"
         }
       },
-      "items": {}
+      "version": "initial"
     }
   ]
 }

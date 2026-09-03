@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import { PrismicPreview } from "@prismicio/next";
+import { repositoryName } from "@/prismicio";
 import { Marcellus, Gentium_Book_Plus, Inter } from "next/font/google";
 import SmoothScroller from "@/components/SmoothScroller";
 import "./globals.css";
@@ -42,6 +44,7 @@ export default function RootLayout({
       <body className="bg-blush text-ink antialiased">
         <SmoothScroller>{children}</SmoothScroller>
       </body>
+      <PrismicPreview repositoryName={repositoryName} />
     </html>
   );
 }
