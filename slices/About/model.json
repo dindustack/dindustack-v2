@@ -1,0 +1,61 @@
+{
+  "id": "about",
+  "type": "SharedSlice",
+  "name": "About",
+  "description": "Prose column beside a scrolling image column",
+  "variations": [
+    {
+      "id": "default",
+      "name": "Default",
+      "docURL": "...",
+      "version": "initial",
+      "description": "Default",
+      "imageUrl": "",
+      "primary": {
+        "surface": {
+          "type": "Select",
+          "config": {
+            "label": "Surface",
+            "placeholder": "Background this section sits on",
+            "options": ["blush", "ink"],
+            "default_value": "blush"
+          }
+        },
+        "paragraphs": {
+          "type": "Group",
+          "config": {
+            "label": "Paragraphs",
+            "fields": {
+              "text": {
+                "type": "StructuredText",
+                "config": {
+                  "label": "Text",
+                  "placeholder": "One paragraph of the about story",
+                  "single": "paragraph,strong,em,hyperlink"
+                }
+              }
+            }
+          }
+        },
+        "images": {
+          "type": "Group",
+          "config": {
+            "label": "Images",
+            "fields": {
+              "image": {
+                "type": "Image",
+                "config": {
+                  "label": "Image",
+                  "placeholder": "Portrait crop, roughly 3:4",
+                  "constraint": { "width": 1080, "height": 1440 },
+                  "thumbnails": []
+                }
+              }
+            }
+          }
+        }
+      },
+      "items": {}
+    }
+  ]
+}

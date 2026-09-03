@@ -1,26 +1,83 @@
 @import "tailwindcss";
 
+@theme {
+  --text-prose: 19px;
+  /* Surfaces. The site alternates blush and ink panel by panel. */
+  --color-blush: #fcede8;
+  --color-ink: #150908;
+  --color-rose: #eb9f9f;
+
+  /* Families are bound to the next/font variables set in layout.tsx */
+  --font-display: var(--font-marcellus);
+  --font-body: var(--font-gentium);
+  --font-mark: var(--font-inter);
+
+  /* Fluid display sizes. Body stays fixed at 16px on purpose. */
+  --text-heading: clamp(32px, 3.7vw, 64px);
+  --text-project: clamp(20px, 1.39vw, 24px);
+  --text-body: 16px;
+  --text-body--line-height: 23px;
+
+  /* Tracking in em so it survives being scaled down. */
+  --tracking-hero: -0.04em;
+  --tracking-heading: -0.05em;
+  --tracking-nav: -0.06em;
+  --tracking-body: -0.01em;
+}
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --gutter: 20px;
+  --content-max: 1664px;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
+@media (width >= 768px) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --gutter: 32px;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@layer base {
+  body {
+    font-family: var(--font-body);
+    font-size: var(--text-body);
+    line-height: var(--text-body--line-height);
+    letter-spacing: var(--tracking-body);
+  }
+
+  /* ScrollSmoother owns scrolling. Native smooth scrolling fights it. */
+  html {
+    scroll-behavior: auto;
+  }
+}
+
+@utility page-gutter {
+  padding-inline: var(--gutter);
+}
+
+@utility content-shell {
+  margin-inline: auto;
+  max-width: var(--content-max);
+  padding-inline: var(--gutter);
+}
+
+/*
+ * Hero name. Not a clamp: the composition depends on the name spanning
+ * the full content width at every viewport, so size is derived from the
+ * 192.52 / 1664 ratio measured in Figma. Never allow this to wrap.
+ */
+@utility hero-name {
+  font-family: var(--font-display);
+  font-size: calc((100vw - 2 * var(--gutter)) * 0.1157);
+  letter-spacing: var(--tracking-hero);
+  line-height: 1;
+  white-space: nowrap;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
 }
