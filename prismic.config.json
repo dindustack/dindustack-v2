@@ -2,8 +2,8 @@
   "repositoryName": "dindustack-v2",
   "routes": [
     {
-      "type": "about_page",
-      "path": "/about-page/:uid"
+      "type": "homepage",
+      "path": "/"
     }
   ]
 }

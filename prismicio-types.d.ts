@@ -46,49 +46,49 @@ type ContentRelationshipFieldWithData<
 		>
 }[Exclude<TCustomType[number], string>["id"]];
 
-type AboutPageDocumentDataSlicesSlice = never
+type HomepageDocumentDataSlicesSlice = never
 
 /**
- * Content for AboutPage documents
+ * Content for Homepage documents
  */
-interface AboutPageDocumentData {
+interface HomepageDocumentData {
 	/**
-	 * Slice Zone field in *AboutPage*
+	 * Slice Zone field in *Homepage*
 	 *
 	 * - **Field Type**: Slice Zone
 	 * - **Placeholder**: *None*
-	 * - **API ID Path**: about_page.slices[]
+	 * - **API ID Path**: homepage.slices[]
 	 * - **Tab**: Main
 	 * - **Documentation**: https://prismic.io/docs/slices
 	 */
-	slices: prismic.SliceZone<AboutPageDocumentDataSlicesSlice>;/**
-	 * Meta Title field in *AboutPage*
+	slices: prismic.SliceZone<HomepageDocumentDataSlicesSlice>;/**
+	 * Meta Title field in *Homepage*
 	 *
 	 * - **Field Type**: Text
 	 * - **Placeholder**: A title of the page used for social media and search engines
-	 * - **API ID Path**: about_page.meta_title
+	 * - **API ID Path**: homepage.meta_title
 	 * - **Tab**: SEO & Metadata
 	 * - **Documentation**: https://prismic.io/docs/fields/text
 	 */
 	meta_title: prismic.KeyTextField;
 	
 	/**
-	 * Meta Description field in *AboutPage*
+	 * Meta Description field in *Homepage*
 	 *
 	 * - **Field Type**: Text
 	 * - **Placeholder**: A brief summary of the page
-	 * - **API ID Path**: about_page.meta_description
+	 * - **API ID Path**: homepage.meta_description
 	 * - **Tab**: SEO & Metadata
 	 * - **Documentation**: https://prismic.io/docs/fields/text
 	 */
 	meta_description: prismic.KeyTextField;
 	
 	/**
-	 * Meta Image field in *AboutPage*
+	 * Meta Image field in *Homepage*
 	 *
 	 * - **Field Type**: Image
 	 * - **Placeholder**: *None*
-	 * - **API ID Path**: about_page.meta_image
+	 * - **API ID Path**: homepage.meta_image
 	 * - **Tab**: SEO & Metadata
 	 * - **Documentation**: https://prismic.io/docs/fields/image
 	 */
@@ -96,17 +96,17 @@ interface AboutPageDocumentData {
 }
 
 /**
- * AboutPage document from Prismic
+ * Homepage document from Prismic
  *
- * - **API ID**: `about_page`
- * - **Repeatable**: `true`
+ * - **API ID**: `homepage`
+ * - **Repeatable**: `false`
  * - **Documentation**: https://prismic.io/docs/content-modeling
  *
  * @typeParam Lang - Language API ID of the document.
  */
-export type AboutPageDocument<Lang extends string = string> = prismic.PrismicDocumentWithUID<Simplify<AboutPageDocumentData>, "about_page", Lang>;
+export type HomepageDocument<Lang extends string = string> = prismic.PrismicDocumentWithoutUID<Simplify<HomepageDocumentData>, "homepage", Lang>;
 
-export type AllDocumentTypes = AboutPageDocument;
+export type AllDocumentTypes = HomepageDocument;
 
 /**
  * Item in *About → Default → Primary → Paragraphs*
@@ -212,9 +212,9 @@ declare module "@prismicio/client" {
 	
 	namespace Content {
 		export type {
-			AboutPageDocument,
-			AboutPageDocumentData,
-			AboutPageDocumentDataSlicesSlice,
+			HomepageDocument,
+			HomepageDocumentData,
+			HomepageDocumentDataSlicesSlice,
 			AllDocumentTypes,
 			AboutSlice,
 			AboutSliceDefaultPrimaryParagraphsItem,

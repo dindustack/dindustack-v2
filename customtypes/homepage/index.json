@@ -1,14 +1,8 @@
 {
   "format": "page",
-  "id": "about_page",
+  "id": "homepage",
   "json": {
     "Main": {
-      "uid": {
-        "config": {
-          "label": "UID"
-        },
-        "type": "UID"
-      },
       "slices": {
         "config": {
           "choices": {}
@@ -45,7 +39,7 @@
       }
     }
   },
-  "label": "AboutPage",
-  "repeatable": true,
+  "label": "Homepage",
+  "repeatable": false,
   "status": true
 }
