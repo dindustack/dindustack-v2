@@ -1,6 +1,6 @@
 {
   "format": "page",
-  "id": "homepage",
+  "id": "about",
   "json": {
     "Main": {
       "slices": {
@@ -43,7 +43,7 @@
       }
     }
   },
-  "label": "Homepage",
+  "label": "About",
   "repeatable": false,
   "status": true
 }

@@ -2,6 +2,10 @@
   "repositoryName": "dindustack-v2",
   "routes": [
     {
+      "type": "about",
+      "path": "/about"
+    },
+    {
       "type": "homepage",
       "path": "/"
     }

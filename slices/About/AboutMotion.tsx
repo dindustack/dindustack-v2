@@ -7,16 +7,8 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 gsap.registerPlugin(useGSAP, ScrollTrigger);
 
-/**
- * Two behaviours, both scoped to this slice so they revert on unmount.
- *
- * The prose paragraphs stagger in once. The image track scrubs upward through
- * its masked window while the section is pinned, which is what the Figma frame
- * implies: a 772px window holding roughly 4545px of images.
- *
- * Neither runs below 1024 or under reduced motion. In those cases the window
- * is a natively scrollable strip, handled in CSS, so nothing is unreachable.
- */
+
+
 export default function AboutMotion({
   children,
 }: {

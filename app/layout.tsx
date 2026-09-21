@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
+import { Marcellus, Gentium_Book_Plus, Inter } from "next/font/google";
 import { PrismicPreview } from "@prismicio/next";
 import { repositoryName } from "@/prismicio";
-import { Marcellus, Gentium_Book_Plus, Inter } from "next/font/google";
 import SmoothScroller from "@/components/SmoothScroller";
+import Nav from "@/components/Nav";
 import "./globals.css";
 
 const marcellus = Marcellus({
@@ -27,8 +28,8 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Dindustack",
-  description: "Portfolio",
+  title: "Chinwendu Agbaetuo",
+  description: "Creative developer",
 };
 
 export default function RootLayout({
@@ -42,6 +43,9 @@ export default function RootLayout({
       className={`${marcellus.variable} ${gentium.variable} ${inter.variable}`}
     >
       <body className="bg-blush text-ink antialiased">
+        {/* Outside the smoother: fixed positioning breaks inside a
+            transformed ancestor. */}
+        <Nav />
         <SmoothScroller>{children}</SmoothScroller>
       </body>
       <PrismicPreview repositoryName={repositoryName} />
