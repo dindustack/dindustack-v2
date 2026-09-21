@@ -1,25 +1,3 @@
-// import { Content } from "@prismicio/client";
-// import { SliceComponentProps } from "@prismicio/react";
-
-
-// export type HeroProps = SliceComponentProps<Content.HeroSlice>;
-
-
-// const Hero: FC<HeroProps> = ({ slice }) => {
-//   return (
-//     <section
-//       data-slice-type={slice.slice_type}
-//       data-slice-variation={slice.variation}
-//     >
-//       Placeholder component for {slice.slice_type} (variation: {slice.variation}
-//       ) slices.
-//       <br />
-//       <strong>You can edit this slice directly in your code editor.</strong>
-//     </section>
-//   );
-// };
-
-// export default Hero;
 import { FC } from "react";
 import { Content, isFilled } from "@prismicio/client";
 import { PrismicRichText, SliceComponentProps } from "@prismicio/react";
@@ -48,11 +26,11 @@ const Hero: FC<HeroProps> = ({ slice }) => {
     >
       <HeroMotion>
         <div className="flex flex-1 items-center justify-center py-32">
-          <div className="flex w-full max-w-[1088px] flex-col items-center gap-12 lg:flex-row lg:gap-[96px]">
+          <div className="flex w-full max-w-272 flex-col items-center gap-12 lg:flex-row lg:gap-24">
             {isFilled.richText(slice.primary.intro_left) ? (
               <div
                 data-animate="intro"
-                className="order-2 w-full text-[16px] leading-[23px] lg:order-1 lg:w-[290px]"
+                className="order-2 w-full text-[16px] leading-5.75 lg:order-1 lg:w-72.5"
               >
                 <PrismicRichText field={slice.primary.intro_left} />
               </div>
@@ -61,12 +39,13 @@ const Hero: FC<HeroProps> = ({ slice }) => {
             {isFilled.image(slice.primary.portrait) ? (
               <div
                 data-animate="portrait"
-                className="relative order-1 aspect-[316/393] w-[260px] shrink-0 overflow-hidden bg-rose lg:order-2 lg:w-[316px]"
+                className="relative order-1 aspect-316/393 w-65 shrink-0 overflow-hidden bg-rose lg:order-2 lg:w-79"
               >
                 <PrismicNextImage
                   field={slice.primary.portrait}
                   fill
-                  priority
+                  loading="eager"
+                  fetchPriority="high"
                   sizes="(min-width: 1024px) 316px, 260px"
                   className="object-cover"
                 />
@@ -76,7 +55,7 @@ const Hero: FC<HeroProps> = ({ slice }) => {
             {isFilled.richText(slice.primary.intro_right) ? (
               <div
                 data-animate="intro"
-                className="order-3 w-full text-[16px] leading-[23px] lg:w-[290px]"
+                className="order-3 w-full text-[16px] leading-5.75 lg:w-72.5"
               >
                 <PrismicRichText field={slice.primary.intro_right} />
               </div>

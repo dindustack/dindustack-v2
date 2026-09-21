@@ -42,9 +42,7 @@ export default function RootLayout({
       lang="en"
       className={`${marcellus.variable} ${gentium.variable} ${inter.variable}`}
     >
-      <body className="bg-blush text-ink antialiased">
-        {/* Outside the smoother: fixed positioning breaks inside a
-            transformed ancestor. */}
+      <body className="bg-blush text-ink antialiased" suppressHydrationWarning>
         <Nav />
         <SmoothScroller>{children}</SmoothScroller>
       </body>

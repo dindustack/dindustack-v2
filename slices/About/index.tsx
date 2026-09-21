@@ -51,6 +51,8 @@ const About = ({ slice }: AboutProps) => {
                     <PrismicNextImage
                       field={item.image}
                       fill
+                      loading={i === 0 ? "eager" : "lazy"}
+                      fetchPriority={i === 0 ? "high" : "auto"}
                       sizes="(min-width: 1024px) 540px, 100vw"
                       className="object-cover"
                     />

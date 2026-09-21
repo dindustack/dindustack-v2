@@ -1,0 +1,96 @@
+{
+  "id": "project",
+  "label": "Project",
+  "repeatable": true,
+  "status": true,
+  "json": {
+    "Main": {
+      "uid": {
+        "type": "UID",
+        "config": {
+          "label": "UID",
+          "placeholder": "funnered-tutors"
+        }
+      },
+      "title": {
+        "type": "Text",
+        "config": {
+          "label": "Title",
+          "placeholder": "Funnered Tutors"
+        }
+      },
+      "order": {
+        "type": "Number",
+        "config": {
+          "label": "Order",
+          "placeholder": "1 to 6, drives panel sequence and the indicator"
+        }
+      },
+      "year": {
+        "type": "Text",
+        "config": {
+          "label": "Year",
+          "placeholder": "2022"
+        }
+      },
+      "category": {
+        "type": "Text",
+        "config": {
+          "label": "Category",
+          "placeholder": "Website"
+        }
+      },
+      "summary": {
+        "type": "StructuredText",
+        "config": {
+          "label": "Summary",
+          "placeholder": "Shown on the detail view, roughly 300 characters",
+          "single": "paragraph,strong,em"
+        }
+      },
+      "visit_url": {
+        "type": "Link",
+        "config": {
+          "label": "Visit URL",
+          "placeholder": "Live site",
+          "allowTargetBlank": true
+        }
+      },
+      "cover": {
+        "type": "Image",
+        "config": {
+          "label": "Cover",
+          "placeholder": "Large panel image, roughly 8:5",
+          "constraint": { "width": 1568, "height": 1000 },
+          "thumbnails": []
+        }
+      },
+      "secondary": {
+        "type": "Image",
+        "config": {
+          "label": "Secondary",
+          "placeholder": "Offset image that bleeds past the right gutter",
+          "constraint": { "width": 1036, "height": 844 },
+          "thumbnails": []
+        }
+      },
+      "gallery": {
+        "type": "Group",
+        "config": {
+          "label": "Gallery",
+          "fields": {
+            "image": {
+              "type": "Image",
+              "config": {
+                "label": "Screenshot",
+                "placeholder": "Detail view screenshot, roughly 12:7",
+                "constraint": { "width": 2066, "height": 1206 },
+                "thumbnails": []
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
