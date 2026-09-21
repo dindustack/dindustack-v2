@@ -1,0 +1,60 @@
+{
+  "id": "hero",
+  "type": "SharedSlice",
+  "name": "Hero",
+  "description": "Name at display size beneath a three-part intro row",
+  "variations": [
+    {
+      "id": "default",
+      "name": "Default",
+      "docURL": "...",
+      "version": "initial",
+      "description": "Default",
+      "imageUrl": "",
+      "primary": {
+        "surface": {
+          "type": "Select",
+          "config": {
+            "label": "Surface",
+            "placeholder": "Background this section sits on",
+            "options": ["blush", "ink"],
+            "default_value": "blush"
+          }
+        },
+        "name": {
+          "type": "Text",
+          "config": {
+            "label": "Name",
+            "placeholder": "Set at display size across the full width"
+          }
+        },
+        "intro_left": {
+          "type": "StructuredText",
+          "config": {
+            "label": "Intro left",
+            "placeholder": "Short paragraph left of the portrait",
+            "single": "paragraph,strong,em"
+          }
+        },
+        "intro_right": {
+          "type": "StructuredText",
+          "config": {
+            "label": "Intro right",
+            "placeholder": "Short paragraph right of the portrait",
+            "single": "paragraph,strong,em"
+          }
+        },
+        "portrait": {
+          "type": "Image",
+          "config": {
+            "label": "Portrait",
+            "placeholder": "Roughly 4:5",
+            "constraint": { "width": 948, "height": 1179 },
+            "thumbnails": []
+          }
+        }
+      },
+      "items": {}
+    }
+  ]
+}

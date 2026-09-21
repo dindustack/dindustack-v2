@@ -257,6 +257,29 @@ type AboutSliceVariation = AboutSliceDefault
  */
 export type AboutSlice = prismic.SharedSlice<"about", AboutSliceVariation>;
 
+/**
+ * Default variation for Hero Slice
+ *
+ * - **API ID**: `default`
+ * - **Description**: Default
+ * - **Documentation**: https://prismic.io/docs/slices
+ */
+export type HeroSliceDefault = prismic.SharedSliceVariation<"default", Record<string, never>, never>;
+
+/**
+ * Slice variation for *Hero*
+ */
+type HeroSliceVariation = HeroSliceDefault
+
+/**
+ * Hero Shared Slice
+ *
+ * - **API ID**: `hero`
+ * - **Description**: Hero
+ * - **Documentation**: https://prismic.io/docs/slices
+ */
+export type HeroSlice = prismic.SharedSlice<"hero", HeroSliceVariation>;
+
 declare module "@prismicio/client" {
 	interface CreateClient {
 		(repositoryNameOrEndpoint: string, options?: prismic.ClientConfig): prismic.Client<AllDocumentTypes>;
@@ -284,7 +307,10 @@ declare module "@prismicio/client" {
 			AboutSliceDefaultPrimaryImagesItem,
 			AboutSliceDefaultPrimary,
 			AboutSliceVariation,
-			AboutSliceDefault
+			AboutSliceDefault,
+			HeroSlice,
+			HeroSliceVariation,
+			HeroSliceDefault
 		}
 	}
 }
