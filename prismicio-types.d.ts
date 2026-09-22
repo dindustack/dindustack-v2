@@ -296,7 +296,67 @@ interface ProjectDocumentData {
  */
 export type ProjectDocument<Lang extends string = string> = prismic.PrismicDocumentWithUID<Simplify<ProjectDocumentData>, "project", Lang>;
 
-export type AllDocumentTypes = AboutDocument | HomepageDocument | ProjectDocument;
+type WorksPageDocumentDataSlicesSlice = WorksSlice
+
+/**
+ * Content for Works Page documents
+ */
+interface WorksPageDocumentData {
+	/**
+	 * Slice Zone field in *Works Page*
+	 *
+	 * - **Field Type**: Slice Zone
+	 * - **Placeholder**: *None*
+	 * - **API ID Path**: works_page.slices[]
+	 * - **Tab**: Main
+	 * - **Documentation**: https://prismic.io/docs/slices
+	 */
+	slices: prismic.SliceZone<WorksPageDocumentDataSlicesSlice>;/**
+	 * Meta Title field in *Works Page*
+	 *
+	 * - **Field Type**: Text
+	 * - **Placeholder**: Shown in the browser tab and search results
+	 * - **API ID Path**: works_page.meta_title
+	 * - **Tab**: SEO & Metadata
+	 * - **Documentation**: https://prismic.io/docs/fields/text
+	 */
+	meta_title: prismic.KeyTextField;
+	
+	/**
+	 * Meta Description field in *Works Page*
+	 *
+	 * - **Field Type**: Text
+	 * - **Placeholder**: Short summary for search results
+	 * - **API ID Path**: works_page.meta_description
+	 * - **Tab**: SEO & Metadata
+	 * - **Documentation**: https://prismic.io/docs/fields/text
+	 */
+	meta_description: prismic.KeyTextField;
+	
+	/**
+	 * Meta Image field in *Works Page*
+	 *
+	 * - **Field Type**: Image
+	 * - **Placeholder**: *None*
+	 * - **API ID Path**: works_page.meta_image
+	 * - **Tab**: SEO & Metadata
+	 * - **Documentation**: https://prismic.io/docs/fields/image
+	 */
+	meta_image: prismic.ImageField<never>;
+}
+
+/**
+ * Works Page document from Prismic
+ *
+ * - **API ID**: `works_page`
+ * - **Repeatable**: `false`
+ * - **Documentation**: https://prismic.io/docs/content-modeling
+ *
+ * @typeParam Lang - Language API ID of the document.
+ */
+export type WorksPageDocument<Lang extends string = string> = prismic.PrismicDocumentWithoutUID<Simplify<WorksPageDocumentData>, "works_page", Lang>;
+
+export type AllDocumentTypes = AboutDocument | HomepageDocument | ProjectDocument | WorksPageDocument;
 
 /**
  * Item in *About → Default → Primary → Paragraphs*
@@ -539,6 +599,9 @@ declare module "@prismicio/client" {
 			ProjectDocument,
 			ProjectDocumentData,
 			ProjectDocumentDataGalleryItem,
+			WorksPageDocument,
+			WorksPageDocumentData,
+			WorksPageDocumentDataSlicesSlice,
 			AllDocumentTypes,
 			AboutSlice,
 			AboutSliceDefaultPrimaryParagraphsItem,

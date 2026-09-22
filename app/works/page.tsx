@@ -4,7 +4,7 @@ import { components } from "@/slices";
 
 export default async function Works() {
   const client = createClient();
-  const page = await client.getSingle("works");
+  const page = await client.getSingle("works_page");
 
   return <SliceZone slices={page.data.slices} components={components} />;
 }

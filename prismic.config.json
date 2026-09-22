@@ -8,6 +8,10 @@
     {
       "type": "homepage",
       "path": "/"
+    },
+    {
+      "type": "works_page",
+      "path": "/works-page"
     }
   ]
 }
