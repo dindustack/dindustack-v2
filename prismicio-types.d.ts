@@ -106,7 +106,7 @@ interface AboutDocumentData {
  */
 export type AboutDocument<Lang extends string = string> = prismic.PrismicDocumentWithoutUID<Simplify<AboutDocumentData>, "about", Lang>;
 
-type HomepageDocumentDataSlicesSlice = AboutSlice
+type HomepageDocumentDataSlicesSlice = AboutSlice | HeroSlice
 
 /**
  * Content for Homepage documents
@@ -166,7 +166,137 @@ interface HomepageDocumentData {
  */
 export type HomepageDocument<Lang extends string = string> = prismic.PrismicDocumentWithoutUID<Simplify<HomepageDocumentData>, "homepage", Lang>;
 
-export type AllDocumentTypes = AboutDocument | HomepageDocument;
+/**
+ * Item in *Project → Gallery*
+ */
+export interface ProjectDocumentDataGalleryItem {
+	/**
+	 * Screenshot field in *Project → Gallery*
+	 *
+	 * - **Field Type**: Image
+	 * - **Placeholder**: Detail view screenshot, roughly 12:7
+	 * - **API ID Path**: project.gallery[].image
+	 * - **Documentation**: https://prismic.io/docs/fields/image
+	 */
+	image: prismic.ImageField<never>;
+}
+
+/**
+ * Content for Project documents
+ */
+interface ProjectDocumentData {
+	/**
+	 * Title field in *Project*
+	 *
+	 * - **Field Type**: Text
+	 * - **Placeholder**: Funnered Tutors
+	 * - **API ID Path**: project.title
+	 * - **Tab**: Main
+	 * - **Documentation**: https://prismic.io/docs/fields/text
+	 */
+	title: prismic.KeyTextField;
+	
+	/**
+	 * Order field in *Project*
+	 *
+	 * - **Field Type**: Number
+	 * - **Placeholder**: 1 to 6, drives panel sequence and the indicator
+	 * - **API ID Path**: project.order
+	 * - **Tab**: Main
+	 * - **Documentation**: https://prismic.io/docs/fields/number
+	 */
+	order: prismic.NumberField;
+	
+	/**
+	 * Year field in *Project*
+	 *
+	 * - **Field Type**: Text
+	 * - **Placeholder**: 2022
+	 * - **API ID Path**: project.year
+	 * - **Tab**: Main
+	 * - **Documentation**: https://prismic.io/docs/fields/text
+	 */
+	year: prismic.KeyTextField;
+	
+	/**
+	 * Category field in *Project*
+	 *
+	 * - **Field Type**: Text
+	 * - **Placeholder**: Website
+	 * - **API ID Path**: project.category
+	 * - **Tab**: Main
+	 * - **Documentation**: https://prismic.io/docs/fields/text
+	 */
+	category: prismic.KeyTextField;
+	
+	/**
+	 * Summary field in *Project*
+	 *
+	 * - **Field Type**: Rich Text
+	 * - **Placeholder**: Shown on the detail view, roughly 300 characters
+	 * - **API ID Path**: project.summary
+	 * - **Tab**: Main
+	 * - **Documentation**: https://prismic.io/docs/fields/rich-text
+	 */
+	summary: prismic.RichTextField;
+	
+	/**
+	 * Visit URL field in *Project*
+	 *
+	 * - **Field Type**: Link
+	 * - **Placeholder**: Live site
+	 * - **API ID Path**: project.visit_url
+	 * - **Tab**: Main
+	 * - **Documentation**: https://prismic.io/docs/fields/link
+	 */
+	visit_url: prismic.LinkField<string, string, unknown, prismic.FieldState, never>;
+	
+	/**
+	 * Cover field in *Project*
+	 *
+	 * - **Field Type**: Image
+	 * - **Placeholder**: Large panel image, roughly 8:5
+	 * - **API ID Path**: project.cover
+	 * - **Tab**: Main
+	 * - **Documentation**: https://prismic.io/docs/fields/image
+	 */
+	cover: prismic.ImageField<never>;
+	
+	/**
+	 * Secondary field in *Project*
+	 *
+	 * - **Field Type**: Image
+	 * - **Placeholder**: Offset image that bleeds past the right gutter
+	 * - **API ID Path**: project.secondary
+	 * - **Tab**: Main
+	 * - **Documentation**: https://prismic.io/docs/fields/image
+	 */
+	secondary: prismic.ImageField<never>;
+	
+	/**
+	 * Gallery field in *Project*
+	 *
+	 * - **Field Type**: Group
+	 * - **Placeholder**: *None*
+	 * - **API ID Path**: project.gallery[]
+	 * - **Tab**: Main
+	 * - **Documentation**: https://prismic.io/docs/fields/repeatable-group
+	 */
+	gallery: prismic.GroupField<Simplify<ProjectDocumentDataGalleryItem>>;
+}
+
+/**
+ * Project document from Prismic
+ *
+ * - **API ID**: `project`
+ * - **Repeatable**: `true`
+ * - **Documentation**: https://prismic.io/docs/content-modeling
+ *
+ * @typeParam Lang - Language API ID of the document.
+ */
+export type ProjectDocument<Lang extends string = string> = prismic.PrismicDocumentWithUID<Simplify<ProjectDocumentData>, "project", Lang>;
+
+export type AllDocumentTypes = AboutDocument | HomepageDocument | ProjectDocument;
 
 /**
  * Item in *About → Default → Primary → Paragraphs*
@@ -258,13 +388,69 @@ type AboutSliceVariation = AboutSliceDefault
 export type AboutSlice = prismic.SharedSlice<"about", AboutSliceVariation>;
 
 /**
+ * Primary content in *Hero → Default → Primary*
+ */
+export interface HeroSliceDefaultPrimary {
+	/**
+	 * Surface field in *Hero → Default → Primary*
+	 *
+	 * - **Field Type**: Select
+	 * - **Placeholder**: Background this section sits on
+	 * - **Default Value**: blush
+	 * - **API ID Path**: hero.default.primary.surface
+	 * - **Documentation**: https://prismic.io/docs/fields/select
+	 */
+	surface: prismic.SelectField<"blush" | "ink", "filled">;
+	
+	/**
+	 * Name field in *Hero → Default → Primary*
+	 *
+	 * - **Field Type**: Text
+	 * - **Placeholder**: Set at display size across the full width
+	 * - **API ID Path**: hero.default.primary.name
+	 * - **Documentation**: https://prismic.io/docs/fields/text
+	 */
+	name: prismic.KeyTextField;
+	
+	/**
+	 * Intro left field in *Hero → Default → Primary*
+	 *
+	 * - **Field Type**: Rich Text
+	 * - **Placeholder**: Short paragraph left of the portrait
+	 * - **API ID Path**: hero.default.primary.intro_left
+	 * - **Documentation**: https://prismic.io/docs/fields/rich-text
+	 */
+	intro_left: prismic.RichTextField;
+	
+	/**
+	 * Intro right field in *Hero → Default → Primary*
+	 *
+	 * - **Field Type**: Rich Text
+	 * - **Placeholder**: Short paragraph right of the portrait
+	 * - **API ID Path**: hero.default.primary.intro_right
+	 * - **Documentation**: https://prismic.io/docs/fields/rich-text
+	 */
+	intro_right: prismic.RichTextField;
+	
+	/**
+	 * Portrait field in *Hero → Default → Primary*
+	 *
+	 * - **Field Type**: Image
+	 * - **Placeholder**: Roughly 4:5
+	 * - **API ID Path**: hero.default.primary.portrait
+	 * - **Documentation**: https://prismic.io/docs/fields/image
+	 */
+	portrait: prismic.ImageField<never>;
+}
+
+/**
  * Default variation for Hero Slice
  *
  * - **API ID**: `default`
  * - **Description**: Default
  * - **Documentation**: https://prismic.io/docs/slices
  */
-export type HeroSliceDefault = prismic.SharedSliceVariation<"default", Record<string, never>, never>;
+export type HeroSliceDefault = prismic.SharedSliceVariation<"default", Simplify<HeroSliceDefaultPrimary>, never>;
 
 /**
  * Slice variation for *Hero*
@@ -275,10 +461,59 @@ type HeroSliceVariation = HeroSliceDefault
  * Hero Shared Slice
  *
  * - **API ID**: `hero`
- * - **Description**: Hero
+ * - **Description**: Name at display size beneath a three-part intro row
  * - **Documentation**: https://prismic.io/docs/slices
  */
 export type HeroSlice = prismic.SharedSlice<"hero", HeroSliceVariation>;
+
+/**
+ * Primary content in *Works → Default → Primary*
+ */
+export interface WorksSliceDefaultPrimary {
+	/**
+	 * Surface field in *Works → Default → Primary*
+	 *
+	 * - **Field Type**: Select
+	 * - **Placeholder**: Background these panels sit on
+	 * - **Default Value**: ink
+	 * - **API ID Path**: works.default.primary.surface
+	 * - **Documentation**: https://prismic.io/docs/fields/select
+	 */
+	surface: prismic.SelectField<"blush" | "ink", "filled">;
+	
+	/**
+	 * Heading field in *Works → Default → Primary*
+	 *
+	 * - **Field Type**: Text
+	 * - **Placeholder**: Recent projects
+	 * - **API ID Path**: works.default.primary.heading
+	 * - **Documentation**: https://prismic.io/docs/fields/text
+	 */
+	heading: prismic.KeyTextField;
+}
+
+/**
+ * Default variation for Works Slice
+ *
+ * - **API ID**: `default`
+ * - **Description**: Default
+ * - **Documentation**: https://prismic.io/docs/slices
+ */
+export type WorksSliceDefault = prismic.SharedSliceVariation<"default", Simplify<WorksSliceDefaultPrimary>, never>;
+
+/**
+ * Slice variation for *Works*
+ */
+type WorksSliceVariation = WorksSliceDefault
+
+/**
+ * Works Shared Slice
+ *
+ * - **API ID**: `works`
+ * - **Description**: One full-viewport panel per project, queried from the Project type
+ * - **Documentation**: https://prismic.io/docs/slices
+ */
+export type WorksSlice = prismic.SharedSlice<"works", WorksSliceVariation>;
 
 declare module "@prismicio/client" {
 	interface CreateClient {
@@ -301,6 +536,9 @@ declare module "@prismicio/client" {
 			HomepageDocument,
 			HomepageDocumentData,
 			HomepageDocumentDataSlicesSlice,
+			ProjectDocument,
+			ProjectDocumentData,
+			ProjectDocumentDataGalleryItem,
 			AllDocumentTypes,
 			AboutSlice,
 			AboutSliceDefaultPrimaryParagraphsItem,
@@ -309,8 +547,13 @@ declare module "@prismicio/client" {
 			AboutSliceVariation,
 			AboutSliceDefault,
 			HeroSlice,
+			HeroSliceDefaultPrimary,
 			HeroSliceVariation,
-			HeroSliceDefault
+			HeroSliceDefault,
+			WorksSlice,
+			WorksSliceDefaultPrimary,
+			WorksSliceVariation,
+			WorksSliceDefault
 		}
 	}
 }

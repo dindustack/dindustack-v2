@@ -2,8 +2,10 @@
 
 import About from "./About";
 import Hero from "./Hero";
+import Works from "./Works";
 
 export const components = {
 	about: About,
-	hero: Hero
+	hero: Hero,
+	works: Works
 };

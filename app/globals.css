@@ -74,16 +74,6 @@
   padding-bottom: 0.12em;
 }
 
-/* @utility hero-name {
-  font-family: var(--font-display);
-  font-size: 100px;
-  letter-spacing: var(--tracking-hero);
-  line-height: 0.85;
-  padding-bottom: 0.12em;
-  white-space: nowrap;
-  transform-origin: left top;
-} */
-
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,

@@ -1,60 +1,66 @@
 {
-  "id": "hero",
-  "type": "SharedSlice",
-  "name": "Hero",
   "description": "Name at display size beneath a three-part intro row",
+  "id": "hero",
+  "name": "Hero",
+  "type": "SharedSlice",
   "variations": [
     {
-      "id": "default",
-      "name": "Default",
-      "docURL": "...",
-      "version": "initial",
       "description": "Default",
+      "docURL": "...",
+      "id": "default",
       "imageUrl": "",
+      "items": {},
+      "name": "Default",
       "primary": {
         "surface": {
-          "type": "Select",
           "config": {
+            "default_value": "blush",
             "label": "Surface",
-            "placeholder": "Background this section sits on",
-            "options": ["blush", "ink"],
-            "default_value": "blush"
-          }
+            "options": [
+              "blush",
+              "ink"
+            ],
+            "placeholder": "Background this section sits on"
+          },
+          "type": "Select"
         },
         "name": {
-          "type": "Text",
           "config": {
             "label": "Name",
             "placeholder": "Set at display size across the full width"
-          }
+          },
+          "type": "Text"
         },
         "intro_left": {
-          "type": "StructuredText",
           "config": {
             "label": "Intro left",
             "placeholder": "Short paragraph left of the portrait",
             "single": "paragraph,strong,em"
-          }
+          },
+          "type": "StructuredText"
         },
         "intro_right": {
-          "type": "StructuredText",
           "config": {
             "label": "Intro right",
             "placeholder": "Short paragraph right of the portrait",
             "single": "paragraph,strong,em"
-          }
+          },
+          "type": "StructuredText"
         },
         "portrait": {
-          "type": "Image",
           "config": {
+            "constraint": {
+              "height": 1179,
+              "width": 948
+            },
             "label": "Portrait",
             "placeholder": "Roughly 4:5",
-            "constraint": { "width": 948, "height": 1179 },
             "thumbnails": []
-          }
+          },
+          "type": "Image"
         }
       },
-      "items": {}
+      "version": "initial"
     }
   ]
 }

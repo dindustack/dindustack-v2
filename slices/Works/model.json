@@ -1,35 +1,38 @@
 {
-  "id": "works",
-  "type": "SharedSlice",
-  "name": "Works",
   "description": "One full-viewport panel per project, queried from the Project type",
+  "id": "works",
+  "name": "Works",
+  "type": "SharedSlice",
   "variations": [
     {
-      "id": "default",
-      "name": "Default",
-      "docURL": "...",
-      "version": "initial",
       "description": "Default",
+      "docURL": "...",
+      "id": "default",
       "imageUrl": "",
+      "items": {},
+      "name": "Default",
       "primary": {
         "surface": {
-          "type": "Select",
           "config": {
+            "default_value": "ink",
             "label": "Surface",
-            "placeholder": "Background these panels sit on",
-            "options": ["blush", "ink"],
-            "default_value": "ink"
-          }
+            "options": [
+              "blush",
+              "ink"
+            ],
+            "placeholder": "Background these panels sit on"
+          },
+          "type": "Select"
         },
         "heading": {
-          "type": "Text",
           "config": {
             "label": "Heading",
             "placeholder": "Recent projects"
-          }
+          },
+          "type": "Text"
         }
       },
-      "items": {}
+      "version": "initial"
     }
   ]
 }

@@ -1,96 +1,106 @@
 {
+  "format": "custom",
   "id": "project",
-  "label": "Project",
-  "repeatable": true,
-  "status": true,
   "json": {
     "Main": {
       "uid": {
-        "type": "UID",
         "config": {
           "label": "UID",
           "placeholder": "funnered-tutors"
-        }
+        },
+        "type": "UID"
       },
       "title": {
-        "type": "Text",
         "config": {
           "label": "Title",
           "placeholder": "Funnered Tutors"
-        }
+        },
+        "type": "Text"
       },
       "order": {
-        "type": "Number",
         "config": {
           "label": "Order",
           "placeholder": "1 to 6, drives panel sequence and the indicator"
-        }
+        },
+        "type": "Number"
       },
       "year": {
-        "type": "Text",
         "config": {
           "label": "Year",
           "placeholder": "2022"
-        }
+        },
+        "type": "Text"
       },
       "category": {
-        "type": "Text",
         "config": {
           "label": "Category",
           "placeholder": "Website"
-        }
+        },
+        "type": "Text"
       },
       "summary": {
-        "type": "StructuredText",
         "config": {
           "label": "Summary",
           "placeholder": "Shown on the detail view, roughly 300 characters",
           "single": "paragraph,strong,em"
-        }
+        },
+        "type": "StructuredText"
       },
       "visit_url": {
-        "type": "Link",
         "config": {
+          "allowTargetBlank": true,
           "label": "Visit URL",
-          "placeholder": "Live site",
-          "allowTargetBlank": true
-        }
+          "placeholder": "Live site"
+        },
+        "type": "Link"
       },
       "cover": {
-        "type": "Image",
         "config": {
+          "constraint": {
+            "height": 1000,
+            "width": 1568
+          },
           "label": "Cover",
           "placeholder": "Large panel image, roughly 8:5",
-          "constraint": { "width": 1568, "height": 1000 },
           "thumbnails": []
-        }
+        },
+        "type": "Image"
       },
       "secondary": {
-        "type": "Image",
         "config": {
+          "constraint": {
+            "height": 844,
+            "width": 1036
+          },
           "label": "Secondary",
           "placeholder": "Offset image that bleeds past the right gutter",
-          "constraint": { "width": 1036, "height": 844 },
           "thumbnails": []
-        }
+        },
+        "type": "Image"
       },
       "gallery": {
-        "type": "Group",
         "config": {
-          "label": "Gallery",
           "fields": {
             "image": {
-              "type": "Image",
               "config": {
+                "constraint": {
+                  "height": 1206,
+                  "width": 2066
+                },
                 "label": "Screenshot",
                 "placeholder": "Detail view screenshot, roughly 12:7",
-                "constraint": { "width": 2066, "height": 1206 },
                 "thumbnails": []
-              }
+              },
+              "type": "Image"
             }
-          }
-        }
+          },
+          "label": "Gallery"
+        },
+        "type": "Group"
       }
     }
-  }
+  },
+  "label": "Project",
+  "repeatable": true,
+  "status": true
 }
