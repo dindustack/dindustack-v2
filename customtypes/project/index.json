@@ -66,18 +66,6 @@
         },
         "type": "Image"
       },
-      "secondary": {
-        "config": {
-          "constraint": {
-            "height": 844,
-            "width": 1036
-          },
-          "label": "Secondary",
-          "placeholder": "Offset image that bleeds past the right gutter",
-          "thumbnails": []
-        },
-        "type": "Image"
-      },
       "gallery": {
         "config": {
           "fields": {

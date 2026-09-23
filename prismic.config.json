@@ -11,7 +11,8 @@
     },
     {
       "type": "works_page",
-      "path": "/works-page"
-    }
+      "path": "/works"
+    },
+    { "type": "project", "path": "/works/:uid" }
   ]
 }

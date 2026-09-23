@@ -13,7 +13,9 @@ export default function Nav() {
 
   useGSAP(
     () => {
-      const dark = gsap.utils.toArray<HTMLElement>('[data-surface="ink"]');
+      const dark = Array.from(
+        document.querySelectorAll<HTMLElement>('[data-surface="ink"]'),
+      );
 
       dark.forEach((section) => {
         ScrollTrigger.create({
