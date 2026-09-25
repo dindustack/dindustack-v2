@@ -4,20 +4,42 @@ import { useRef } from "react";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { layout } from "./layout";
 
 gsap.registerPlugin(useGSAP, ScrollTrigger);
 
 /**
- * Pins the Works section and converts vertical scroll into horizontal travel
- * of the project track. The indicator is driven from the same progress value,
- * so it can never disagree with what is on screen.
+ * Fraction of each step, at each end, where nothing moves. The transition
+ * happens in the middle, so every project has a stretch of scroll where it
+ * sits still in focus. That gives natural resting points without snapping,
+ * which fights ScrollSmoother's lag and can pull back to the previous project.
+ */
+const HOLD = 0.2;
+
+/** Maps raw scroll steps to focus position, with a hold at every project. */
+function focusFromScroll(raw: number, count: number) {
+  const max = count - 1;
+  if (raw >= max) return max;
+  const k = Math.floor(raw);
+  const f = raw - k;
+  const t = Math.min(1, Math.max(0, (f - HOLD) / (1 - 2 * HOLD)));
+  // smoothstep, so each transition eases in and out
+  return k + t * t * (3 - 2 * t);
+}
+
+/**
+ * Scroll drives one number, the focus position, from 0 to the last project.
+ * On every update each card's position, size and caption opacity is computed
+ * from that number by the same layout() the server used, and written to the
+ * card's custom properties. Nothing is tweened independently, so nothing can
+ * drift out of step.
  *
- * Snapping settles the track on a whole project when scrolling stops, which
- * keeps each panel's composition intact rather than resting between two.
+ * Values are in vw, so a resize needs no recalculation.
  *
- * Indicator updates write a data attribute directly instead of setting React
- * state, because onUpdate fires every frame and a re-render per frame would
- * stutter the scrub.
+ * No snapping: resting points come from HOLD instead, see above.
+ *
+ * Runs at 1024 and above. Reduced motion keeps the scroll-driven row, since
+ * it is direct manipulation rather than autoplay, but drops the smoothing lag.
  */
 export default function WorksMotion({
   children,
@@ -33,45 +55,62 @@ export default function WorksMotion({
       const mm = gsap.matchMedia();
 
       mm.add(
-        "(min-width: 1024px) and (prefers-reduced-motion: no-preference)",
-        () => {
-          const section = root.current?.parentElement;
-          const track =
-            root.current?.querySelector<HTMLElement>("[data-works='track']");
-          const bars = Array.from(
-            root.current?.querySelectorAll<HTMLElement>("[data-works='bar']") ??
-              []
-          );
-          if (!section || !track || count < 2) return;
+        {
+          isDesktop: "(min-width: 1024px)",
+          reduce: "(prefers-reduced-motion: reduce)",
+        },
+        (ctx) => {
+          const { isDesktop, reduce } = ctx.conditions as {
+            isDesktop: boolean;
+            reduce: boolean;
+          };
+          const scope = root.current;
+          const section = scope?.parentElement;
+          if (!isDesktop || !scope || !section || count < 2) return;
 
-          const distance = () => track.scrollWidth - window.innerWidth;
+          const cards = Array.from(
+            scope.querySelectorAll<HTMLElement>("[data-works='card']")
+          );
+          const bars = Array.from(
+            scope.querySelectorAll<HTMLElement>("[data-works='bar']")
+          );
+
+          const state = { raw: 0 };
           let active = 0;
 
-          gsap.to(track, {
-            x: () => -distance(),
+          const apply = () => {
+            const p = focusFromScroll(state.raw, count);
+            const L = layout(p, count);
+            cards.forEach((card, j) => {
+              card.style.setProperty("--l", `${L[j].left}vw`);
+              card.style.setProperty("--w", `${L[j].w}vw`);
+              card.style.setProperty("--h", `${L[j].h}vw`);
+              card.style.setProperty("--o", String(L[j].o));
+            });
+
+            const next = Math.round(p);
+            if (next !== active) {
+              active = next;
+              bars.forEach((bar, bi) => {
+                bar.dataset.active = String(bi === next);
+              });
+            }
+          };
+
+          gsap.to(state, {
+            raw: count - 1,
             ease: "none",
+            onUpdate: apply,
             scrollTrigger: {
               trigger: section,
               start: "top top",
-              end: () => `+=${distance()}`,
+              end: () => `+=${(count - 1) * window.innerHeight}`,
               pin: true,
-              scrub: 1,
-              invalidateOnRefresh: true,
-              snap: {
-                snapTo: 1 / (count - 1),
-                duration: { min: 0.2, max: 0.5 },
-                ease: "power1.inOut",
-              },
-              onUpdate: (self) => {
-                const next = Math.round(self.progress * (count - 1));
-                if (next === active) return;
-                active = next;
-                bars.forEach((bar, i) => {
-                  bar.dataset.active = String(i === next);
-                });
-              },
+              scrub: reduce ? true : 1,
             },
           });
+
+          apply();
         }
       );
 

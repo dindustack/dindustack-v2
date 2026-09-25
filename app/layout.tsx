@@ -4,6 +4,8 @@ import { PrismicPreview } from "@prismicio/next";
 import { repositoryName } from "@/prismicio";
 import SmoothScroller from "@/components/SmoothScroller";
 import Nav from "@/components/Nav";
+import PageTransition from "@/components/PageTransition";
+import Footer from "@/components/Footer";
 import "./globals.css";
 
 const marcellus = Marcellus({
@@ -29,7 +31,7 @@ const inter = Inter({
 
 export const metadata: Metadata = {
   title: "Chinwendu Agbaetuo",
-  description: "Creative developer",
+  description: "Creative developer in Texas",
 };
 
 export default function RootLayout({
@@ -44,7 +46,11 @@ export default function RootLayout({
     >
       <body className="bg-blush text-ink antialiased" suppressHydrationWarning>
         <Nav />
-        <SmoothScroller>{children}</SmoothScroller>
+        <PageTransition />
+        <SmoothScroller>
+          {children}
+          <Footer />
+        </SmoothScroller>
       </body>
       <PrismicPreview repositoryName={repositoryName} />
     </html>

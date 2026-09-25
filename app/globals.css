@@ -6,6 +6,16 @@
   --color-blush: #fcede8;
   --color-ink: #150908;
   --color-rose: #eb9f9f;
+  --color-umber: #381716;
+
+  /* Footer email marquee. Two identical runs move by half, so it loops
+     without a seam. */
+  --animate-marquee: marquee 40s linear infinite;
+  @keyframes marquee {
+    to {
+      transform: translateX(-50%);
+    }
+  }
 
   /* Families are bound to the next/font variables set in layout.tsx */
   --font-display: var(--font-marcellus);

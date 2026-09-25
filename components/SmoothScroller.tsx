@@ -1,6 +1,7 @@
 "use client";
 
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
+import { usePathname } from "next/navigation";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -8,13 +9,6 @@ import { ScrollSmoother } from "gsap/ScrollSmoother";
 
 gsap.registerPlugin(useGSAP, ScrollTrigger, ScrollSmoother);
 
-/**
- * Initialised once, at the layout level. Slices never create their own
- * smoother; they assume this exists and use ordinary ScrollTrigger positions.
- *
- * smoothTouch stays off. Momentum scrolling on touch devices already feels
- * right, and overriding it makes pinned sections behave unpredictably.
- */
 export default function SmoothScroller({
   children,
 }: {
@@ -22,6 +16,7 @@ export default function SmoothScroller({
 }) {
   const wrapper = useRef<HTMLDivElement>(null);
   const content = useRef<HTMLDivElement>(null);
+  const pathname = usePathname();
 
   useGSAP(
     () => {
@@ -47,6 +42,12 @@ export default function SmoothScroller({
     },
     { scope: wrapper }
   );
+
+  useEffect(() => {
+    ScrollSmoother.get()?.scrollTop(0);
+    const id = requestAnimationFrame(() => ScrollTrigger.refresh());
+    return () => cancelAnimationFrame(id);
+  }, [pathname]);
 
   return (
     <div id="smooth-wrapper" ref={wrapper}>

@@ -1,27 +1,23 @@
+import type { CSSProperties } from "react";
 import { Content, isFilled } from "@prismicio/client";
 import { SliceComponentProps } from "@prismicio/react";
 import { PrismicNextImage, PrismicNextLink } from "@prismicio/next";
 import { createClient } from "@/prismicio";
 import WorksMotion from "./WorksMotion";
+import { layout } from "./layout";
 
 export type WorksProps = SliceComponentProps<Content.WorksSlice>;
 
 /**
- * One pinned section holding a horizontal track of project panels. Scrolling
- * down slides the track left; when it runs out, the pin releases and the next
- * section rises normally. The six Works frames in Figma are keyframes of this
- * sequence, one per project.
+ * One continuous row of projects, each appearing once. The project in focus
+ * is large with its caption beneath; its neighbours are smaller, the previous
+ * one partly off the left edge and the next partly off the right. Scrolling
+ * brings each project into focus in turn, then the pin releases.
  *
- * Each panel shows its own cover plus a glimpse of the NEXT project's cover
- * at the right, bleeding past the panel edge. That second image is not a
- * secondary shot of the same project, it is the one coming up, and it links
- * straight to it.
- *
- * The last panel has no preview. Nothing follows it, so the empty right side
- * gives the sequence somewhere to end before the pin releases.
- *
- * Measured at 1728: cover 784x500 offset 26.4% from the left, preview 518x422
- * beside it. Heading and indicator sit outside the track so they hold still.
+ * Each card's position and size live in CSS custom properties (--l, --w,
+ * --h, --o) that only the desktop classes read. The server writes them for
+ * the first project in focus; the client rewrites them from a single scroll
+ * value. Mobile ignores them and stacks the projects vertically.
  */
 const Works = async ({ slice }: WorksProps) => {
   const client = createClient();
@@ -32,78 +28,71 @@ const Works = async ({ slice }: WorksProps) => {
   if (projects.length === 0) return null;
 
   const isInk = slice.primary.surface !== "blush";
+  const initial = layout(0, projects.length);
 
   return (
     <section
       data-slice-type={slice.slice_type}
       data-slice-variation={slice.variation}
       data-surface={isInk ? "ink" : "blush"}
-      className={`relative lg:h-svh lg:overflow-hidden ${
+      className={`relative pb-16 lg:h-svh lg:overflow-hidden lg:pb-0 ${
         isInk ? "bg-ink text-white" : "bg-blush text-ink"
       }`}
     >
       <WorksMotion count={projects.length}>
-        <h2 className="font-display page-gutter pointer-events-none relative z-10 pt-[83px] text-heading tracking-[var(--tracking-heading)] lg:absolute lg:inset-x-0 lg:top-0">
+        <h2 className="font-display page-gutter relative z-10 pt-[83px] text-heading tracking-[var(--tracking-heading)]">
           {slice.primary.heading}
         </h2>
 
         <div
-          data-works="track"
-          className="flex snap-x snap-mandatory overflow-x-auto lg:h-full lg:w-max lg:snap-none lg:overflow-visible"
+          data-works="row"
+          className="mt-10 flex flex-col gap-12 px-[var(--gutter)] lg:absolute lg:inset-x-0 lg:top-[28%] lg:mt-0 lg:block lg:px-0"
         >
-          {projects.map((project, i) => {
-            const next = projects[i + 1];
-
-            return (
-              <article
-                key={project.id}
-                className="page-gutter relative flex min-h-[80svh] w-screen shrink-0 snap-start items-center lg:h-full"
+          {projects.map((project, i) => (
+            <article
+              key={project.id}
+              data-works="card"
+              style={
+                {
+                  "--l": `${initial[i].left}vw`,
+                  "--w": `${initial[i].w}vw`,
+                  "--h": `${initial[i].h}vw`,
+                  "--o": initial[i].o,
+                } as CSSProperties
+              }
+              className="w-full lg:absolute lg:left-[var(--l)] lg:top-0 lg:w-[var(--w)]"
+            >
+              <PrismicNextLink
+                document={project}
+                data-transition
+                className="group block"
               >
-                <div className="flex w-full items-start gap-[3%]">
-                  <div className="w-full lg:ml-[26.4%] lg:w-[47.1%]">
-                    <PrismicNextLink document={project} className="group block">
-                      {isFilled.image(project.data.cover) ? (
-                        <div className="relative aspect-[784/500] w-full overflow-hidden">
-                          <PrismicNextImage
-                            field={project.data.cover}
-                            fill
-                            sizes="(min-width: 1024px) 47vw, 100vw"
-                            className="object-cover transition-transform duration-700 group-hover:scale-[1.03]"
-                          />
-                        </div>
-                      ) : null}
-
-                      <div className="pt-[19px]">
-                        <p className="text-project">{project.data.title}</p>
-                        <p className="text-[16px] opacity-50">
-                          {[project.data.year, project.data.category]
-                            .filter(Boolean)
-                            .join(" - ")}
-                        </p>
-                      </div>
-                    </PrismicNextLink>
-                  </div>
-
-                  {/* The next project, glimpsed. Clickable, so it can be
-                      jumped to rather than scrolled to. */}
-                  {next && isFilled.image(next.data.cover) ? (
-                    <PrismicNextLink
-                      document={next}
-                      aria-label={`Next project: ${next.data.title}`}
-                      className="group relative hidden aspect-[518/422] w-[31.1%] shrink-0 overflow-hidden opacity-90 transition-opacity duration-500 hover:opacity-100 lg:block"
-                    >
-                      <PrismicNextImage
-                        field={next.data.cover}
-                        fill
-                        sizes="31vw"
-                        className="object-cover transition-transform duration-700 group-hover:scale-[1.03]"
-                      />
-                    </PrismicNextLink>
+                <div
+                  data-transition-image
+                  className="relative aspect-[784/500] w-full overflow-hidden lg:aspect-auto lg:h-[var(--h)]"
+                >
+                  {isFilled.image(project.data.cover) ? (
+                    <PrismicNextImage
+                      field={project.data.cover}
+                      fill
+                      priority={i === 0}
+                      sizes="(min-width: 1024px) 46vw, 100vw"
+                      className="object-cover transition-transform duration-700 group-hover:scale-[1.03]"
+                    />
                   ) : null}
                 </div>
-              </article>
-            );
-          })}
+
+                <div className="pt-[19px] lg:opacity-[var(--o)]">
+                  <p className="text-project">{project.data.title}</p>
+                  <p className="text-[16px] opacity-50">
+                    {[project.data.year, project.data.category]
+                      .filter(Boolean)
+                      .join(" - ")}
+                  </p>
+                </div>
+              </PrismicNextLink>
+            </article>
+          ))}
         </div>
 
         <div
