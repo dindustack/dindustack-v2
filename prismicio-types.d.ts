@@ -263,17 +263,6 @@ interface ProjectDocumentData {
 	cover: prismic.ImageField<never>;
 	
 	/**
-	 * Secondary field in *Project*
-	 *
-	 * - **Field Type**: Image
-	 * - **Placeholder**: Offset image that bleeds past the right gutter
-	 * - **API ID Path**: project.secondary
-	 * - **Tab**: Main
-	 * - **Documentation**: https://prismic.io/docs/fields/image
-	 */
-	secondary: prismic.ImageField<never>;
-	
-	/**
 	 * Gallery field in *Project*
 	 *
 	 * - **Field Type**: Group
