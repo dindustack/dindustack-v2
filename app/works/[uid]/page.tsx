@@ -153,8 +153,8 @@ export default async function ProjectPage({
 }
 
 /**
- * Stand-in for the Figma arrow icon, drawn to match it: the export URL was
- * unreachable from here. Swap for an exported SVG if the shape differs.
+ * The Figma arrow icon, from public/icons/right-up-arrow.svg. Inlined with
+ * currentColor so it follows the link's colour and hover state.
  */
 function ArrowUpRight() {
   return (
@@ -165,9 +165,11 @@ function ArrowUpRight() {
       fill="none"
       stroke="currentColor"
       strokeWidth={2}
-      strokeLinecap="square"
+      strokeLinecap="round"
+      strokeLinejoin="round"
     >
-      <path d="M5 11 11 5M6 5h5v5" />
+      <path d="M4.66797 4.66699H11.3346V11.3337" />
+      <path d="M4.66797 11.3337L11.3346 4.66699" />
     </svg>
   );
 }

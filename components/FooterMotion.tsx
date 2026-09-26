@@ -9,13 +9,16 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 gsap.registerPlugin(useGSAP, ScrollTrigger);
 
 /**
- * Makes the footer rise over the last section of whatever page it follows.
+ * Makes the footer rise over the end of whatever page it follows.
  *
- * Rather than pinning that section (it may already be pinned, as on Works and
- * the project pages, and a second pin on the same element conflicts), it is
- * moved down by exactly as far as the page scrolls while the footer comes up.
- * The two cancel out, so the section appears to hold still while the footer,
- * stacked above it, slides over it.
+ * The page wrapper (the data-page div in the layout) is moved down by exactly
+ * as far as the page scrolls while the footer comes up. The two cancel out, so
+ * the page appears to hold still while the footer, stacked above it, slides
+ * over it.
+ *
+ * It must be the wrapper, not the last section: under ScrollSmoother, GSAP
+ * pins a section by transforming that section itself, so moving the section
+ * here would fight the pin (Works, project pages, About).
  *
  * The footer lives in the layout and persists across routes, so this re-runs
  * on every page change to find the new page's last section.

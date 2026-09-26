@@ -48,7 +48,9 @@ export default function RootLayout({
         <Nav />
         <PageTransition />
         <SmoothScroller>
-          {children}
+          {/* One wrapper around every page, so the footer can move the page
+              as it rises without touching any pinned section inside. */}
+          <div data-page>{children}</div>
           <Footer />
         </SmoothScroller>
       </body>

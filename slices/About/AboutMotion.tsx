@@ -32,11 +32,12 @@ export default function AboutMotion({
             scrollTrigger: { trigger: root.current, start: "top 65%" },
           });
 
+          const section = root.current?.parentElement;
           const track =
             root.current?.querySelector<HTMLElement>("[data-about='track']");
           const window_ =
             root.current?.querySelector<HTMLElement>("[data-about='window']");
-          if (!track || !window_) return;
+          if (!section || !track || !window_) return;
 
           // Measured in a function so invalidateOnRefresh can recompute it
           // after fonts load or the viewport changes.
@@ -46,10 +47,17 @@ export default function AboutMotion({
             y: () => -travel(),
             ease: "none",
             scrollTrigger: {
-              trigger: root.current,
-              start: "top top",
+              // Pin the whole section, not this inner wrapper, and pin it when
+              // its bottom edge reaches the bottom of the screen. The section
+              // is at least a viewport tall, so this keeps its top padding in
+              // place (nothing slides up under the nav), and the pin releases
+              // exactly as the next thing, the footer, starts to arrive. The
+              // footer moves this section as it rises over it, so the two must
+              // never run at the same time.
+              trigger: section,
+              start: "bottom bottom",
               end: () => `+=${travel()}`,
-              pin: true,
+              pin: section,
               pinSpacing: true,
               scrub: 1,
               invalidateOnRefresh: true,

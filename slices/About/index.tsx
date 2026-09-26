@@ -39,14 +39,14 @@ const About = ({ slice }: AboutProps) => {
           */}
           <div
             data-about="window"
-            className="w-full snap-y snap-mandatory overflow-y-auto lg:h-[min(772px,71svh)] lg:w-135 lg:overflow-hidden"
+            className="w-full max-lg:snap-y max-lg:snap-mandatory max-lg:overflow-y-auto lg:h-[min(772px,71svh)] lg:w-135 lg:overflow-hidden"
           >
             <div data-about="track" className="flex flex-col gap-11.25">
               {slice.primary.images.map((item, i) =>
                 isFilled.image(item.image) ? (
                   <div
                     key={i}
-                    className="relative aspect-3/4 w-full shrink-0 snap-start overflow-hidden"
+                    className="relative aspect-3/4 w-full shrink-0 overflow-hidden max-lg:snap-start"
                   >
                     <PrismicNextImage
                       field={item.image}

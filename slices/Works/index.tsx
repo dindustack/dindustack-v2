@@ -36,7 +36,12 @@ const Works = async ({ slice }: WorksProps) => {
       data-slice-variation={slice.variation}
       data-surface={isInk ? "ink" : "blush"}
       className={`relative pb-16 lg:h-svh lg:overflow-hidden lg:pb-0 ${
-        isInk ? "bg-ink text-white" : "bg-blush text-ink"
+        isInk
+          ? // Faint hand-drawn pattern over ink. The faintness is baked into
+            // the SVG's colour, so there is no overlay layer to sit on top of
+            // the project cards. Swap the file to change the pattern.
+            "bg-ink text-white [background-image:url(/patterns/works-print.svg)] [background-size:480px]"
+          : "bg-blush text-ink"
       }`}
     >
       <WorksMotion count={projects.length}>
