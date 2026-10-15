@@ -53,6 +53,12 @@ export default function FooterMotion({
 
       if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
+      // No slide-over on touch screens. There the browser scrolls the page
+      // natively, a frame ahead of this script, so holding the page still
+      // with a transform always lags behind and the text visibly shakes.
+      // The footer simply scrolls up after the page instead.
+      if (window.matchMedia("(pointer: coarse)").matches) return;
+
       // Hidden on project pages that lead on to another project (see
       // globals.css); nothing to rise.
       if (footer.offsetHeight === 0) return;
