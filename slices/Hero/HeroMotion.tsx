@@ -49,7 +49,7 @@ export default function HeroMotion({
   );
 
   return (
-    <div ref={root} className="flex min-h-svh flex-1 flex-col">
+    <div ref={root} className="relative flex min-h-svh flex-1 flex-col">
       {children}
     </div>
   );

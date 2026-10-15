@@ -3,6 +3,7 @@ import { Content, isFilled } from "@prismicio/client";
 import { PrismicRichText, SliceComponentProps } from "@prismicio/react";
 import { PrismicNextImage } from "@prismicio/next";
 import HeroMotion from "./HeroMotion";
+import ScrollToWorks from "./ScrollToWorks";
 
 /**
  * Props for `Hero`.
@@ -24,13 +25,15 @@ const Hero: FC<HeroProps> = ({ slice }) => {
         isInk ? "bg-ink text-white" : "bg-blush text-ink"
       }`}
     >
+      {/* First scroll down leaves for the Works page. */}
+      <ScrollToWorks />
       <HeroMotion>
-        <div className="flex flex-1 items-center justify-center py-32">
+        <div className="flex flex-1 items-center justify-center py-32 lg:absolute lg:inset-x-0 lg:top-[24svh] lg:py-0">
           <div className="flex w-full max-w-272 flex-col items-center gap-12 lg:flex-row lg:gap-24">
             {isFilled.richText(slice.primary.intro_left) ? (
               <div
                 data-animate="intro"
-                className="order-2 w-full text-[16px] leading-5.75 lg:order-1 lg:w-72.5"
+                className="order-2 w-full text-[16px] leading-5.75 lg:order-1 lg:w-72.5 lg:text-[18px] lg:leading-normal"
               >
                 <PrismicRichText field={slice.primary.intro_left} />
               </div>
@@ -55,7 +58,7 @@ const Hero: FC<HeroProps> = ({ slice }) => {
             {isFilled.richText(slice.primary.intro_right) ? (
               <div
                 data-animate="intro"
-                className="order-3 w-full text-[16px] leading-5.75 lg:w-72.5"
+                className="order-3 w-full text-[16px] leading-5.75 lg:w-72.5 lg:text-[18px] lg:leading-normal"
               >
                 <PrismicRichText field={slice.primary.intro_right} />
               </div>
@@ -63,9 +66,7 @@ const Hero: FC<HeroProps> = ({ slice }) => {
           </div>
         </div>
 
-        {/* Full bleed within the gutter. Never allowed to wrap: the
-            composition depends on the name spanning gutter to gutter. */}
-        <div className="overflow-hidden pb-[11svh]">
+        <div className="mt-auto overflow-hidden pb-[11svh] lg:pb-[4svh]">
           <h1 data-animate="name" className="hero-name">
             {slice.primary.name}
           </h1>

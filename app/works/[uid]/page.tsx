@@ -1,10 +1,11 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { isFilled } from "@prismicio/client";
+import { asImageSrc, isFilled } from "@prismicio/client";
 import { PrismicRichText } from "@prismicio/react";
 import { PrismicNextImage, PrismicNextLink } from "@prismicio/next";
 import { createClient } from "@/prismicio";
 import ProjectGallery from "./ProjectGallery";
+import NextProject from "./NextProject";
 
 type Params = { uid: string };
 
@@ -42,7 +43,13 @@ export default async function ProjectPage({
     isFilled.image(item.image)
   );
 
+  // Projects lead on to the next one in Works order. The last project has
+  // none, so it ends with the footer instead.
+  const position = projects.findIndex((p) => p.id === project.id);
+  const next = position >= 0 ? projects[position + 1] : undefined;
+
   return (
+    <>
     <section
       data-surface="blush"
       className="relative bg-blush text-ink lg:h-svh lg:overflow-hidden"
@@ -149,6 +156,14 @@ export default async function ProjectPage({
         </nav>
       </ProjectGallery>
     </section>
+
+    {next?.url && isFilled.image(next.data.cover) ? (
+      <NextProject
+        href={next.url}
+        image={asImageSrc(next.data.cover, { w: 2400 }) ?? ""}
+      />
+    ) : null}
+    </>
   );
 }
 

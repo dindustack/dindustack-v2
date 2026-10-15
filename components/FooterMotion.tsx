@@ -38,6 +38,10 @@ export default function FooterMotion({
 
       if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
+      // Hidden on project pages that lead on to another project (see
+      // globals.css); nothing to rise.
+      if (footer.offsetHeight === 0) return;
+
       // The last visible element before the footer. Skips anything hidden or
       // zero-height that the framework may insert.
       let prev = footer.previousElementSibling as HTMLElement | null;
@@ -72,7 +76,7 @@ export default function FooterMotion({
   );
 
   return (
-    <div ref={root} className="relative z-10">
+    <div ref={root} data-footer className="relative z-10">
       {children}
     </div>
   );

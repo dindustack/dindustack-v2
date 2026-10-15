@@ -92,3 +92,9 @@
     transition-duration: 0.01ms !important;
   }
 }
+
+/* Project pages that lead on to the next project end there, not at the
+   footer. Only the last project in Works order shows the footer. */
+body:has([data-next-project]) [data-footer] {
+  display: none;
+}

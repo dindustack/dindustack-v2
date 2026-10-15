@@ -113,18 +113,32 @@ export default function PageTransition() {
   // The route has changed: fade the covering image away to reveal the page.
   useEffect(() => {
     const overlay = document.getElementById(OVERLAY_ID);
-    if (!overlay) return;
+    if (overlay) {
+      gsap.to(overlay, {
+        autoAlpha: 0,
+        duration: 0.6,
+        delay: 0.2,
+        ease: "power2.out",
+        onComplete: () => {
+          overlay.remove();
+          busy.current = false;
+        },
+      });
+    }
 
-    gsap.to(overlay, {
-      autoAlpha: 0,
-      duration: 0.6,
-      delay: 0.2,
-      ease: "power2.out",
-      onComplete: () => {
-        overlay.remove();
-        busy.current = false;
-      },
-    });
+    // The ink curtain from the homepage hero (slices/Hero/ScrollToWorks).
+    // It matches the Works background exactly, so it can linger a beat and
+    // then melt away slowly, letting the projects surface out of the ink.
+    const curtain = document.getElementById("page-curtain");
+    if (curtain) {
+      gsap.to(curtain, {
+        autoAlpha: 0,
+        duration: 0.6,
+        delay: 0.05,
+        ease: "power2.out",
+        onComplete: () => curtain.remove(),
+      });
+    }
   }, [pathname]);
 
   return null;
