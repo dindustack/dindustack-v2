@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Marcellus, Gentium_Book_Plus, Inter } from "next/font/google";
+import { Marcellus, Gentium_Book_Plus, Inter, Merriweather } from "next/font/google";
 import { PrismicPreview } from "@prismicio/next";
 import { repositoryName } from "@/prismicio";
 import SmoothScroller from "@/components/SmoothScroller";
@@ -18,7 +18,18 @@ const marcellus = Marcellus({
 const gentium = Gentium_Book_Plus({
   subsets: ["latin"],
   weight: ["400", "700"],
+  style: ["normal", "italic"],
   variable: "--font-gentium",
+  display: "swap",
+});
+
+// Only the light italic: it sets the service keywords in the About page's
+// "What i do" sentence and nothing else.
+const merriweather = Merriweather({
+  subsets: ["latin"],
+  weight: "300",
+  style: "italic",
+  variable: "--font-merriweather",
   display: "swap",
 });
 
@@ -42,7 +53,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${marcellus.variable} ${gentium.variable} ${inter.variable}`}
+      className={`${marcellus.variable} ${gentium.variable} ${inter.variable} ${merriweather.variable}`}
     >
       <body className="bg-blush text-ink antialiased" suppressHydrationWarning>
         <Nav />

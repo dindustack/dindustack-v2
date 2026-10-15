@@ -21,6 +21,7 @@
   --font-display: var(--font-marcellus);
   --font-body: var(--font-gentium);
   --font-mark: var(--font-inter);
+  --font-accent: var(--font-merriweather);
 
   /* Fluid display sizes. Body stays fixed at 16px on purpose. */
   --text-heading: clamp(32px, 3.7vw, 64px);

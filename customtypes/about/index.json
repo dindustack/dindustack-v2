@@ -8,6 +8,9 @@
           "choices": {
             "about": {
               "type": "SharedSlice"
+            },
+            "services": {
+              "type": "SharedSlice"
             }
           }
         },

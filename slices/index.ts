@@ -2,10 +2,12 @@
 
 import About from "./About";
 import Hero from "./Hero";
+import Services from "./Services";
 import Works from "./Works";
 
 export const components = {
 	about: About,
 	hero: Hero,
+	services: Services,
 	works: Works
 };

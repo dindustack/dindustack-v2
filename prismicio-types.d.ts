@@ -46,7 +46,7 @@ type ContentRelationshipFieldWithData<
 		>
 }[Exclude<TCustomType[number], string>["id"]];
 
-type AboutDocumentDataSlicesSlice = AboutSlice
+type AboutDocumentDataSlicesSlice = AboutSlice | ServicesSlice
 
 /**
  * Content for About documents
@@ -516,6 +516,99 @@ type HeroSliceVariation = HeroSliceDefault
 export type HeroSlice = prismic.SharedSlice<"hero", HeroSliceVariation>;
 
 /**
+ * Item in *Services → Default → Primary → Services*
+ */
+export interface ServicesSliceDefaultPrimaryServicesItem {
+	/**
+	 * Verb field in *Services → Default → Primary → Services*
+	 *
+	 * - **Field Type**: Text
+	 * - **Placeholder**: design
+	 * - **API ID Path**: services.default.primary.services[].verb
+	 * - **Documentation**: https://prismic.io/docs/fields/text
+	 */
+	verb: prismic.KeyTextField;
+	
+	/**
+	 * Keyword field in *Services → Default → Primary → Services*
+	 *
+	 * - **Field Type**: Text
+	 * - **Placeholder**: interfaces
+	 * - **API ID Path**: services.default.primary.services[].keyword
+	 * - **Documentation**: https://prismic.io/docs/fields/text
+	 */
+	keyword: prismic.KeyTextField;
+	
+	/**
+	 * Title field in *Services → Default → Primary → Services*
+	 *
+	 * - **Field Type**: Text
+	 * - **Placeholder**: User interface design
+	 * - **API ID Path**: services.default.primary.services[].title
+	 * - **Documentation**: https://prismic.io/docs/fields/text
+	 */
+	title: prismic.KeyTextField;
+	
+	/**
+	 * Description field in *Services → Default → Primary → Services*
+	 *
+	 * - **Field Type**: Text
+	 * - **Placeholder**: One sentence about this service
+	 * - **API ID Path**: services.default.primary.services[].description
+	 * - **Documentation**: https://prismic.io/docs/fields/text
+	 */
+	description: prismic.KeyTextField;
+}
+
+/**
+ * Primary content in *Services → Default → Primary*
+ */
+export interface ServicesSliceDefaultPrimary {
+	/**
+	 * Label field in *Services → Default → Primary*
+	 *
+	 * - **Field Type**: Text
+	 * - **Placeholder**: What i do
+	 * - **API ID Path**: services.default.primary.label
+	 * - **Documentation**: https://prismic.io/docs/fields/text
+	 */
+	label: prismic.KeyTextField;
+	
+	/**
+	 * Services field in *Services → Default → Primary*
+	 *
+	 * - **Field Type**: Group
+	 * - **Placeholder**: *None*
+	 * - **API ID Path**: services.default.primary.services[]
+	 * - **Documentation**: https://prismic.io/docs/fields/repeatable-group
+	 */
+	services: prismic.GroupField<Simplify<ServicesSliceDefaultPrimaryServicesItem>>;
+}
+
+/**
+ * Default variation for Services Slice
+ *
+ * - **API ID**: `default`
+ * - **Description**: Default
+ * - **Documentation**: https://prismic.io/docs/slices
+ */
+export type ServicesSliceDefault = prismic.SharedSliceVariation<"default", Simplify<ServicesSliceDefaultPrimary>, never>;
+
+/**
+ * Slice variation for *Services*
+ */
+type ServicesSliceVariation = ServicesSliceDefault
+
+/**
+ * Services Shared Slice
+ *
+ * - **API ID**: `services`
+ * - **Description**: What i do: a sentence of services that cycles one at a time on scroll
+ * - **Documentation**: https://prismic.io/docs/slices
+ */
+export type ServicesSlice = prismic.SharedSlice<"services", ServicesSliceVariation>;
+
+/**
  * Primary content in *Works → Default → Primary*
  */
 export interface WorksSliceDefaultPrimary {
@@ -602,6 +695,11 @@ declare module "@prismicio/client" {
 			HeroSliceDefaultPrimary,
 			HeroSliceVariation,
 			HeroSliceDefault,
+			ServicesSlice,
+			ServicesSliceDefaultPrimaryServicesItem,
+			ServicesSliceDefaultPrimary,
+			ServicesSliceVariation,
+			ServicesSliceDefault,
 			WorksSlice,
 			WorksSliceDefaultPrimary,
 			WorksSliceVariation,

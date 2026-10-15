@@ -1,0 +1,47 @@
+{
+  "id": "services",
+  "type": "SharedSlice",
+  "name": "Services",
+  "description": "What i do: a sentence of services that cycles one at a time on scroll",
+  "variations": [
+    {
+      "id": "default",
+      "name": "Default",
+      "docURL": "...",
+      "version": "initial",
+      "description": "Default",
+      "imageUrl": "",
+      "primary": {
+        "label": {
+          "type": "Text",
+          "config": { "label": "Label", "placeholder": "What i do" }
+        },
+        "services": {
+          "type": "Group",
+          "config": {
+            "label": "Services",
+            "fields": {
+              "verb": {
+                "type": "Text",
+                "config": { "label": "Verb", "placeholder": "design" }
+              },
+              "keyword": {
+                "type": "Text",
+                "config": { "label": "Keyword", "placeholder": "interfaces" }
+              },
+              "title": {
+                "type": "Text",
+                "config": { "label": "Title", "placeholder": "User interface design" }
+              },
+              "description": {
+                "type": "Text",
+                "config": { "label": "Description", "placeholder": "One sentence about this service" }
+              }
+            }
+          }
+        }
+      },
+      "items": {}
+    }
+  ]
+}
