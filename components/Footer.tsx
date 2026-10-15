@@ -44,7 +44,7 @@ export default function Footer() {
     <FooterMotion>
       <footer
         data-surface="blush"
-        className="relative z-10 flex min-h-svh flex-col justify-between overflow-hidden bg-blush pb-7.5 pt-[20svh] text-ink shadow-[0_-24px_60px_rgba(21,9,8,0.08)]"
+        className="relative z-10 flex min-h-lvh flex-col justify-between overflow-hidden bg-blush pb-7.5 pt-[20svh] text-ink shadow-[0_-24px_60px_rgba(21,9,8,0.08)]"
       >
         <p className="page-gutter text-[clamp(32px,3.47vw,60px)] leading-none tracking-[-0.05em]">
           Let&rsquo;s make great work together
