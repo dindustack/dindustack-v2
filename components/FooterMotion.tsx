@@ -36,6 +36,21 @@ export default function FooterMotion({
       const footer = root.current;
       if (!footer) return;
 
+      // On phones the visible area grows as the browser's toolbars slide
+      // away, and in-app browsers on iOS (Brave, Chrome, Firefox) do not
+      // report that larger height through 100lvh. A footer shorter than the
+      // screen stops short of the top and leaves the page showing above it.
+      // The physical screen height is always at least as tall as any visible
+      // area, so it is a safe floor for the footer on touch devices.
+      const inner = footer.firstElementChild as HTMLElement | null;
+      if (inner && window.matchMedia("(pointer: coarse)").matches) {
+        const floor = Math.max(window.screen.height, window.innerHeight);
+        if (inner.offsetHeight < floor) {
+          inner.style.minHeight = `${floor}px`;
+          ScrollTrigger.refresh();
+        }
+      }
+
       if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
       // Hidden on project pages that lead on to another project (see
