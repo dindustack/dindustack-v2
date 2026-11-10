@@ -41,15 +41,26 @@ export default async function ProjectPage({
         className="relative bg-blush text-ink lg:h-svh lg:overflow-hidden"
       >
         <ProjectGallery count={gallery.length}>
-          <div className="flex flex-col gap-12 px-[var(--gutter)] pb-10 pt-30 lg:absolute lg:inset-x-0 lg:bottom-[22.2svh] lg:flex-row lg:items-end lg:gap-0 lg:p-0 lg:pl-[9.72vw]">
-            <div className="flex w-full max-w-93.25 flex-col gap-10.5 lg:w-[max(21.59vw,280px)] lg:max-w-none lg:shrink-0">
+          <div className="flex flex-col gap-12 px-[var(--gutter)] pb-10 pt-30 lg:absolute lg:inset-x-0 lg:bottom-[22.2svh] lg:flex-row lg:items-start lg:gap-0 lg:p-0 lg:pl-[9.72vw]">
+            {/*
+              Outlined title, drawn white with a difference blend so the
+              outline shows dark on blush and light over dark screenshots. On desktop it sits above the row and runs into
+              the first screenshot: first word, then the rest stepped in.
+              Measured from the 1728 frame: 152px type on 108px lines, its
+              top 110px above the screenshots.
+            */}
+            <h1
+              data-animate="detail"
+              className="font-bold text-[clamp(56px,8.8vw,152px)] leading-[0.85] lg:leading-[0.71] tracking-[-0.04em] text-transparent [-webkit-text-stroke:1px_#fff] mix-blend-difference lg:pointer-events-none lg:absolute lg:left-[9.72vw] lg:top-[-6.37vw] lg:z-10"
+            >
+              <TitleLines title={project.data.title ?? ""} />
+            </h1>
+
+            <div className="flex w-full max-w-93.25 flex-col gap-10.5 lg:w-[max(21.59vw,280px)] lg:max-w-none lg:shrink-0 lg:pt-[3.125vw]">
               <div className="flex flex-col gap-4.75">
-                <div data-animate="detail" className="flex flex-col gap-0.5">
-                  <h1 className="text-[22px] font-bold leading-tight">
-                    {project.data.title}
-                  </h1>
-                  {project.data.year ? <p>{project.data.year}</p> : null}
-                </div>
+                {project.data.year ? (
+                  <p data-animate="detail">{project.data.year}</p>
+                ) : null}
 
                 {isFilled.richText(project.data.summary) ? (
                   <div data-animate="detail">
@@ -96,27 +107,55 @@ export default async function ProjectPage({
             </div>
           </div>
 
+          {/*
+            Thumbnails of the screenshots, bottom left. Each scrolls the
+            strip to its screenshot (ProjectGallery wires the clicks and
+            marks the one in view). Desktop only: below lg the screenshots
+            simply stack.
+          */}
           {gallery.length > 1 ? (
-            <div
-              aria-hidden
-              className="pointer-events-none absolute bottom-6 left-1/2 hidden -translate-x-1/2 items-end gap-2.25 lg:flex"
+            <ul
+              aria-label="Screenshots"
+              className="absolute bottom-4.25 left-3.25 hidden items-end gap-0.75 lg:flex"
             >
-              {gallery.map((_, i) => (
-                <span
-                  key={i}
-                  data-gallery="bar"
-                  data-active={i === 0}
-                  className="h-2.5 w-0.75 bg-ink transition-all duration-300 data-[active=true]:h-4"
-                />
+              {gallery.map((item, i) => (
+                <li key={i}>
+                  <button
+                    type="button"
+                    data-gallery="thumb"
+                    data-index={i}
+                    aria-current={i === 0 ? "true" : undefined}
+                    aria-label={`Show screenshot ${i + 1} of ${gallery.length}`}
+                    className="relative block h-11.5 w-19.75 cursor-pointer overflow-hidden rounded-[2px] opacity-35 transition-opacity duration-300 hover:opacity-100 aria-[current=true]:opacity-100"
+                  >
+                    <PrismicNextImage
+                      field={item.image}
+                      fill
+                      alt=""
+                      sizes="80px"
+                      className="object-cover"
+                    />
+                  </button>
+                </li>
               ))}
-            </div>
+            </ul>
+          ) : null}
+
+          {/* Big project number, bottom right, above the pager. */}
+          {position >= 0 ? (
+            <p
+              aria-hidden
+              className="hidden font-bold text-[clamp(64px,8.8vw,152px)] leading-[0.71] tracking-[-0.04em] text-black lg:absolute lg:bottom-[calc(1.5rem+21px+0.6vw)] lg:right-[var(--gutter)] lg:block"
+            >
+              {String(position + 1).padStart(2, "0")}
+            </p>
           ) : null}
 
           <nav
             aria-label="Projects"
             className="flex items-center gap-0.5 px-[var(--gutter)] pb-10 text-[14px] font-bold leading-none text-umber lg:absolute lg:bottom-6 lg:right-[var(--gutter)] lg:p-0"
           >
-            <span aria-hidden className="tracking-nav">P</span>
+            <span aria-hidden className="tracking-nav">Project</span>
             <span aria-hidden className="tracking-nav">-</span>
             {/* Each number is a 24px target; the boxes touch, which keeps
                 the numbers evenly spaced without extra gap. */}
@@ -148,6 +187,27 @@ export default async function ProjectPage({
           image={asImageSrc(next.data.cover, { w: 2400 }) ?? ""}
         />
       ) : null}
+    </>
+  );
+}
+
+/**
+ * The title as the design sets it: the first word on its own line, the rest
+ * on a second line stepped in. One-word titles stay on one line. Screen
+ * readers get the plain title.
+ */
+function TitleLines({ title }: { title: string }) {
+  const [first, ...rest] = title.trim().split(/\s+/);
+  if (!rest.length) return <>{first}</>;
+  return (
+    <>
+      <span className="block">{first}</span>
+      {/* Stepped in to start where the text column ends, so a letter
+          with a tail (the J of Jesutedo) clears the description. */}
+      <span className="block lg:pl-[calc(max(21.59vw,280px)+0.3em)]">
+        {" "}
+        {rest.join(" ")}
+      </span>
     </>
   );
 }
