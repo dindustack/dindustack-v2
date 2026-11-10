@@ -3,15 +3,25 @@
 import { useRef } from "react";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
+import { SplitText } from "gsap/SplitText";
 
-gsap.registerPlugin(useGSAP);
+gsap.registerPlugin(useGSAP, SplitText);
+
+/** Fired by ScrollToWorks so a scroll mid-intro can finish it at once. */
+export const FINISH_INTRO = "hero:finish-intro";
 
 /**
- * Entrance only. No ScrollTrigger: the hero is above the fold, so it should
- * play on load rather than wait for a scroll position it may never reach.
+ * Entrance only, played on load. The nav slides in on its own at 0s (see
+ * NavMotion); this sequence starts one step after it, each step one second
+ * after the previous one starts:
  *
- * The name rises from behind its own overflow-hidden wrapper, which is why
- * that wrapper exists in the component rather than being a stray div.
+ *   1s  the picture
+ *   2s  the name, letter by letter, 200ms apart, rising from behind its own
+ *       overflow-hidden wrapper
+ *   3s  the write-up, typed out character by character, left then right
+ *
+ * Elements marked data-intro start hidden in CSS (globals.css) so nothing
+ * flashes before this runs; a CSS fallback reveals them if script never does.
  */
 export default function HeroMotion({
   children,
@@ -22,30 +32,77 @@ export default function HeroMotion({
 
   useGSAP(
     () => {
+      const scope = root.current;
+      if (!scope) return;
+      const pending = scope.querySelectorAll<HTMLElement>("[data-intro]");
       const mm = gsap.matchMedia();
 
-      mm.add("(prefers-reduced-motion: no-preference)", () => {
-        const tl = gsap.timeline({ defaults: { ease: "power3.out" } });
+      mm.add("(prefers-reduced-motion: reduce)", () => {
+        gsap.set(pending, { visibility: "visible" });
+      });
 
-        tl.from("[data-animate='name']", {
-          yPercent: 110,
-          duration: 1.1,
-        })
-          .from(
-            "[data-animate='portrait']",
-            { autoAlpha: 0, scale: 1.04, duration: 0.9 },
-            0.1,
-          )
-          .from(
-            "[data-animate='intro']",
-            { y: 16, autoAlpha: 0, duration: 0.8, stagger: 0.1 },
-            0.35,
+      mm.add("(prefers-reduced-motion: no-preference)", () => {
+        const name = scope.querySelector<HTMLElement>("[data-animate='name']");
+        const intros = Array.from(
+          scope.querySelectorAll<HTMLElement>("[data-animate='intro']")
+        );
+
+        const nameSplit = name
+          ? SplitText.create(name, { type: "chars", aria: "auto" })
+          : null;
+        const introSplits = intros.map((el) =>
+          SplitText.create(el, { type: "chars,words", aria: "auto" })
+        );
+
+        const tl = gsap.timeline({
+          defaults: { ease: "power3.out" },
+          onComplete: () => {
+            // Hand back plain text, so the exit ripple in ScrollToWorks can
+            // split the name afresh and text wraps normally on resize.
+            nameSplit?.revert();
+            introSplits.forEach((s) => s.revert());
+          },
+        });
+
+        gsap.set(pending, { visibility: "visible" });
+
+        tl.from(
+          "[data-animate='portrait']",
+          { autoAlpha: 0, scale: 1.04, duration: 0.9 },
+          1
+        );
+
+        if (nameSplit) {
+          tl.from(
+            nameSplit.chars,
+            { yPercent: 110, duration: 0.9, stagger: 0.2 },
+            2
           );
+        }
+
+        // Typing: each character appears at once, in order. The pace adapts
+        // so each block types out in about two seconds whatever its length.
+        let at = 3;
+        introSplits.forEach((split) => {
+          const chars = split.chars;
+          if (!chars.length) return;
+          const each = Math.min(0.035, 2 / chars.length);
+          tl.from(
+            chars,
+            { autoAlpha: 0, duration: 0.01, ease: "none", stagger: each },
+            at
+          );
+          at += chars.length * each;
+        });
+
+        const finish = () => tl.progress(1);
+        window.addEventListener(FINISH_INTRO, finish);
+        return () => window.removeEventListener(FINISH_INTRO, finish);
       });
 
       return () => mm.revert();
     },
-    { scope: root },
+    { scope: root }
   );
 
   return (

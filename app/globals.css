@@ -99,3 +99,16 @@
 body:has([data-next-project]) [data-footer] {
   display: none;
 }
+
+/*
+  Intro elements (hero picture, name, write-up, nav) start hidden so they do
+  not flash before their entrance runs. The script makes them visible as it
+  starts; if it never runs, this delayed animation reveals them anyway.
+*/
+[data-intro] {
+  visibility: hidden;
+  animation: intro-fallback 0s 4s forwards;
+}
+@keyframes intro-fallback {
+  to { visibility: visible; }
+}

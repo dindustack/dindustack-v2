@@ -62,7 +62,7 @@ export default async function ProjectPage({
                 <PrismicNextLink
                   field={project.data.visit_url}
                   data-animate="detail"
-                  className="inline-flex items-center gap-0.5 self-start text-[15px] font-bold leading-none hover:opacity-60"
+                  className="inline-flex items-center gap-1 self-start text-[15px] font-bold uppercase leading-none tracking-[0.04em] hover:opacity-60"
                 >
                   Visit website
                   <ArrowUpRight />
@@ -162,7 +162,7 @@ function ArrowUpRight() {
       className="h-4 w-4 shrink-0"
       fill="none"
       stroke="currentColor"
-      strokeWidth={2}
+      strokeWidth={1.25}
       strokeLinecap="round"
       strokeLinejoin="round"
     >

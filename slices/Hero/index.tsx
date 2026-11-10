@@ -33,6 +33,7 @@ const Hero: FC<HeroProps> = ({ slice }) => {
             {isFilled.richText(slice.primary.intro_left) ? (
               <div
                 data-animate="intro"
+                data-intro
                 className="order-2 w-full text-[16px] leading-5.75 lg:order-1 lg:w-72.5 lg:text-[18px] lg:leading-normal"
               >
                 <PrismicRichText field={slice.primary.intro_left} />
@@ -42,6 +43,7 @@ const Hero: FC<HeroProps> = ({ slice }) => {
             {isFilled.image(slice.primary.portrait) ? (
               <div
                 data-animate="portrait"
+                data-intro
                 className="relative order-1 aspect-316/393 w-65 shrink-0 overflow-hidden bg-rose lg:order-2 lg:w-79"
               >
                 <PrismicNextImage
@@ -58,6 +60,7 @@ const Hero: FC<HeroProps> = ({ slice }) => {
             {isFilled.richText(slice.primary.intro_right) ? (
               <div
                 data-animate="intro"
+                data-intro
                 className="order-3 w-full text-[16px] leading-5.75 lg:w-72.5 lg:text-[18px] lg:leading-normal"
               >
                 <PrismicRichText field={slice.primary.intro_right} />
@@ -67,7 +70,7 @@ const Hero: FC<HeroProps> = ({ slice }) => {
         </div>
 
         <div className="mt-auto overflow-hidden pb-[11svh] lg:pb-[4svh]">
-          <h1 data-animate="name" className="hero-name">
+          <h1 data-animate="name" data-intro className="hero-name">
             {slice.primary.name}
           </h1>
         </div>

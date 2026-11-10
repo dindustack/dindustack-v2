@@ -4,9 +4,10 @@ import { useRef } from "react";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { layout } from "./layout";
+import { ScrollSmoother } from "gsap/ScrollSmoother";
+import { layout, REST, GAP } from "./layout";
 
-gsap.registerPlugin(useGSAP, ScrollTrigger);
+gsap.registerPlugin(useGSAP, ScrollTrigger, ScrollSmoother);
 
 /**
  * Fraction of each step, at each end, where nothing moves. The transition
@@ -71,12 +72,55 @@ export default function WorksMotion({
           const cards = Array.from(
             scope.querySelectorAll<HTMLElement>("[data-works='card']")
           );
+          const captions = cards.map((c) =>
+            c.querySelector<HTMLElement>("[data-works='caption']")
+          );
           const bars = Array.from(
             scope.querySelectorAll<HTMLElement>("[data-works='bar']")
           );
+          const row = scope.querySelector<HTMLElement>("[data-works='row']");
 
           const state = { raw: 0 };
           let active = 0;
+
+          // Captions are timed, not scrubbed: the incoming title waits for
+          // its project to arrive, then rises from below out of a blur. The
+          // outgoing one fades quickly so the two never overlap.
+          const present = captions.filter((c): c is HTMLElement => !!c);
+          gsap.set(present, { opacity: 0, y: 24, filter: "blur(8px)" });
+          if (captions[0]) {
+            gsap.set(captions[0], { opacity: 1, y: 0, filter: "blur(0px)" });
+          }
+
+          const showCaption = (next: number, prev: number) => {
+            const out = captions[prev];
+            const inn = captions[next];
+            if (out) {
+              gsap.to(out, {
+                opacity: 0,
+                y: -8,
+                filter: "blur(4px)",
+                duration: reduce ? 0 : 0.3,
+                ease: "power2.in",
+                overwrite: true,
+              });
+            }
+            if (inn) {
+              gsap.fromTo(
+                inn,
+                { opacity: 0, y: 24, filter: "blur(8px)" },
+                {
+                  opacity: 1,
+                  y: 0,
+                  filter: "blur(0px)",
+                  duration: reduce ? 0 : 0.8,
+                  delay: reduce ? 0 : 0.15,
+                  ease: "power3.out",
+                  overwrite: true,
+                }
+              );
+            }
+          };
 
           const apply = () => {
             const p = focusFromScroll(state.raw, count);
@@ -85,11 +129,12 @@ export default function WorksMotion({
               card.style.setProperty("--l", `${L[j].left}vw`);
               card.style.setProperty("--w", `${L[j].w}vw`);
               card.style.setProperty("--h", `${L[j].h}vw`);
-              card.style.setProperty("--o", String(L[j].o));
+              card.style.setProperty("--b", `${L[j].b}px`);
             });
 
             const next = Math.round(p);
             if (next !== active) {
+              showCaption(next, active);
               active = next;
               bars.forEach((bar, bi) => {
                 bar.dataset.active = String(bi === next);
@@ -97,7 +142,7 @@ export default function WorksMotion({
             }
           };
 
-          gsap.to(state, {
+          const tween = gsap.to(state, {
             raw: count - 1,
             ease: "none",
             onUpdate: apply,
@@ -109,8 +154,103 @@ export default function WorksMotion({
               scrub: reduce ? true : 1,
             },
           });
+          const st = tween.scrollTrigger!;
+
+          // One project step is one screen height of scroll.
+          const scrollFor = (index: number) =>
+            st.start + index * window.innerHeight;
+
+          const scrollTo = (y: number, smooth: boolean) => {
+            const clamped = Math.min(st.end, Math.max(st.start, y));
+            const smoother = ScrollSmoother.get();
+            if (smoother) smoother.scrollTo(clamped, smooth);
+            else window.scrollTo({ top: clamped, behavior: smooth ? "smooth" : "auto" });
+          };
+
+          const currentScroll = () =>
+            ScrollSmoother.get()?.scrollTop() ?? window.scrollY;
+
+          // Keyboard: left and right arrows move one project while the row
+          // is on screen. Ignored while typing in a field.
+          const onKey = (e: KeyboardEvent) => {
+            if (e.key !== "ArrowRight" && e.key !== "ArrowLeft") return;
+            const t = e.target as HTMLElement | null;
+            if (t?.closest("input, textarea, select, [contenteditable]")) return;
+            const y = currentScroll();
+            if (y < st.start - 2 || y > st.end + 2) return;
+            e.preventDefault();
+            const target = Math.min(
+              count - 1,
+              Math.max(0, active + (e.key === "ArrowRight" ? 1 : -1))
+            );
+            scrollTo(scrollFor(target), !reduce);
+          };
+          window.addEventListener("keydown", onKey);
+
+          // Drag: pulling the row sideways scrolls the page, so the row
+          // moves under the pointer. One card width of drag is one step.
+          // A drag that moved is not a click, so it will not open a project.
+          let dragStartX = 0;
+          let dragStartY = 0;
+          let dragging = false;
+          let moved = false;
+          const STEP_PX = () => ((REST.w + GAP) * window.innerWidth) / 100;
+
+          const onDown = (e: PointerEvent) => {
+            if (e.pointerType === "touch" || e.button !== 0) return;
+            dragging = true;
+            moved = false;
+            dragStartX = e.clientX;
+            dragStartY = currentScroll();
+          };
+          const onMove = (e: PointerEvent) => {
+            if (!dragging) return;
+            const dx = e.clientX - dragStartX;
+            if (!moved && Math.abs(dx) < 6) return;
+            if (!moved) {
+              moved = true;
+              row?.setAttribute("data-dragging", "true");
+            }
+            scrollTo(
+              dragStartY - (dx / STEP_PX()) * window.innerHeight,
+              false
+            );
+          };
+          const onUp = () => {
+            if (!dragging) return;
+            dragging = false;
+            row?.removeAttribute("data-dragging");
+            if (!moved) return;
+            // Settle on the nearest project.
+            const raw = (currentScroll() - st.start) / window.innerHeight;
+            scrollTo(scrollFor(Math.round(raw)), !reduce);
+          };
+          const onClick = (e: MouseEvent) => {
+            if (moved) {
+              e.preventDefault();
+              e.stopPropagation();
+              moved = false;
+            }
+          };
+          const onDragStart = (e: DragEvent) => e.preventDefault();
+
+          row?.addEventListener("pointerdown", onDown);
+          window.addEventListener("pointermove", onMove);
+          window.addEventListener("pointerup", onUp);
+          row?.addEventListener("click", onClick, true);
+          row?.addEventListener("dragstart", onDragStart);
 
           apply();
+
+          return () => {
+            window.removeEventListener("keydown", onKey);
+            row?.removeEventListener("pointerdown", onDown);
+            window.removeEventListener("pointermove", onMove);
+            window.removeEventListener("pointerup", onUp);
+            row?.removeEventListener("click", onClick, true);
+            row?.removeEventListener("dragstart", onDragStart);
+            row?.removeAttribute("data-dragging");
+          };
         }
       );
 

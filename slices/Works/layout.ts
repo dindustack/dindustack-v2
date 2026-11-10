@@ -13,7 +13,17 @@ export const REST = { w: 29.98, h: 24.42 };
 export const GAP = 1.85;
 export const FOCUS_X = 27.31;
 
-export type CardLayout = { left: number; w: number; h: number; o: number };
+/** Blur, in px, on a card fully out of focus. */
+export const BLUR = 6;
+
+export type CardLayout = {
+  left: number;
+  w: number;
+  h: number;
+  o: number;
+  /** Image blur in px: 0 in focus, BLUR one step or more away. */
+  b: number;
+};
 
 /**
  * p is the focus position: 0 means the first project is in focus, 1 the
@@ -51,5 +61,6 @@ export function layout(p: number, count: number): CardLayout[] {
     // Caption only shows in the back half of focus, so the outgoing and
     // incoming titles cross-fade rather than overlap.
     o: Math.min(1, Math.max(0, (s.f - 0.5) * 2)),
+    b: BLUR * (1 - s.f),
   }));
 }

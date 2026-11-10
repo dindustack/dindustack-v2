@@ -4,6 +4,7 @@ import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import gsap from "gsap";
 import { SplitText } from "gsap/SplitText";
+import { FINISH_INTRO } from "./HeroMotion";
 
 gsap.registerPlugin(SplitText);
 
@@ -51,6 +52,10 @@ export default function ScrollToWorks() {
         router.push(DESTINATION);
         return;
       }
+
+      // Leaving before the entrance has finished: jump it to its end first,
+      // so the exit animates whole letters and lines, not half-built ones.
+      window.dispatchEvent(new Event(FINISH_INTRO));
 
       const name = hero.querySelector<HTMLElement>("[data-animate='name']");
       const intro = hero.querySelectorAll<HTMLElement>("[data-animate='intro']");

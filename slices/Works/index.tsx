@@ -51,7 +51,7 @@ const Works = async ({ slice }: WorksProps) => {
 
         <div
           data-works="row"
-          className="mt-10 flex flex-col gap-12 px-[var(--gutter)] lg:absolute lg:inset-x-0 lg:top-[28%] lg:mt-0 lg:block lg:px-0"
+          className="mt-10 flex flex-col gap-12 px-[var(--gutter)] lg:absolute lg:inset-x-0 lg:top-[28%] lg:mt-0 lg:block lg:cursor-grab lg:select-none lg:px-0 lg:data-[dragging=true]:cursor-grabbing"
         >
           {projects.map((project, i) => (
             <article
@@ -63,6 +63,7 @@ const Works = async ({ slice }: WorksProps) => {
                   "--w": `${initial[i].w}vw`,
                   "--h": `${initial[i].h}vw`,
                   "--o": initial[i].o,
+                  "--b": `${initial[i].b}px`,
                 } as CSSProperties
               }
               className="w-full lg:absolute lg:left-[var(--l)] lg:top-0 lg:w-[var(--w)]"
@@ -70,24 +71,34 @@ const Works = async ({ slice }: WorksProps) => {
               <PrismicNextLink
                 document={project}
                 data-transition
+                draggable={false}
                 className="group block"
               >
                 <div
                   data-transition-image
-                  className="relative aspect-[784/500] w-full overflow-hidden lg:aspect-auto lg:h-[var(--h)]"
+                  className="relative aspect-[784/500] w-full overflow-hidden lg:aspect-auto lg:h-[var(--h)] lg:[filter:blur(var(--b))]"
                 >
                   {isFilled.image(project.data.cover) ? (
                     <PrismicNextImage
                       field={project.data.cover}
                       fill
                       priority={i === 0}
+                      draggable={false}
                       sizes="(min-width: 1024px) 46vw, 100vw"
                       className="object-cover transition-transform duration-700 group-hover:scale-[1.03]"
                     />
                   ) : null}
                 </div>
 
-                <div className="pt-[19px] lg:opacity-[var(--o)]">
+                {/*
+                  On desktop the caption is shown by WorksMotion: it rises
+                  and unblurs once its project has settled in focus. Only the
+                  first starts visible.
+                */}
+                <div
+                  data-works="caption"
+                  className={`pt-[19px] ${i === 0 ? "" : "lg:opacity-0"}`}
+                >
                   <p className="text-project">{project.data.title}</p>
                   <p className="text-[16px] opacity-50">
                     {[project.data.year, project.data.category]
