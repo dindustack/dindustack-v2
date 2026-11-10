@@ -26,7 +26,11 @@ export default function NavMotion({ children }: { children: React.ReactNode }) {
 
       mm.add("(prefers-reduced-motion: no-preference)", () => {
         gsap
-          .timeline({ defaults: { duration: 0.9, ease: "power3.out" } })
+          .timeline({
+            defaults: { duration: 0.9, ease: "power3.out" },
+            // Hand transforms back to CSS so the hover scale can work.
+            onComplete: () => gsap.set([logo, links], { clearProps: "transform" }),
+          })
           .fromTo(logo, { x: -40, autoAlpha: 0 }, { x: 0, autoAlpha: 1 }, 0)
           .fromTo(links, { x: 40, autoAlpha: 0 }, { x: 0, autoAlpha: 1 }, 0);
       });
@@ -37,7 +41,7 @@ export default function NavMotion({ children }: { children: React.ReactNode }) {
   );
 
   return (
-    <div ref={root} className="flex items-start justify-between">
+    <div ref={root} className="contents">
       {children}
     </div>
   );

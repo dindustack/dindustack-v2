@@ -1,6 +1,6 @@
 import { FC } from "react";
-import { Content, isFilled } from "@prismicio/client";
-import { PrismicRichText, SliceComponentProps } from "@prismicio/react";
+import { Content, asHTML, isFilled } from "@prismicio/client";
+import { SliceComponentProps } from "@prismicio/react";
 import { PrismicNextImage } from "@prismicio/next";
 import HeroMotion from "./HeroMotion";
 import ScrollToWorks from "./ScrollToWorks";
@@ -36,7 +36,10 @@ const Hero: FC<HeroProps> = ({ slice }) => {
                 data-intro
                 className="order-2 w-full text-[16px] leading-5.75 lg:order-1 lg:w-72.5 lg:text-[18px] lg:leading-normal"
               >
-                <PrismicRichText field={slice.primary.intro_left} />
+                {/* Static HTML, not React children: the entrance splits this
+                    text into letters, and React must not be tracking nodes
+                    that the split replaces (see escapeHTML below). */}
+                <div dangerouslySetInnerHTML={{ __html: asHTML(slice.primary.intro_left) }} />
               </div>
             ) : null}
 
@@ -63,7 +66,7 @@ const Hero: FC<HeroProps> = ({ slice }) => {
                 data-intro
                 className="order-3 w-full text-[16px] leading-5.75 lg:w-72.5 lg:text-[18px] lg:leading-normal"
               >
-                <PrismicRichText field={slice.primary.intro_right} />
+                <div dangerouslySetInnerHTML={{ __html: asHTML(slice.primary.intro_right) }} />
               </div>
             ) : null}
           </div>
@@ -73,14 +76,32 @@ const Hero: FC<HeroProps> = ({ slice }) => {
           {/* Clips the letters as they rise. No padding of its own, so a
               letter waiting below is fully out of sight. */}
           <div className="hero-name-clip">
-            <h1 data-animate="name" data-intro className="hero-name">
-              {slice.primary.name}
-            </h1>
+            <h1
+              data-animate="name"
+              data-intro
+              className="hero-name"
+              dangerouslySetInnerHTML={{ __html: escapeHTML(slice.primary.name ?? "") }}
+            />
           </div>
         </div>
       </HeroMotion>
     </section>
   );
 };
+
+/**
+ * The name and write-up are split into letters by GSAP's SplitText, which
+ * swaps out their text nodes and later puts fresh ones back. If React still
+ * owned those nodes it would try to remove ones that are no longer there
+ * ("Node.removeChild: The node to be removed is not a child of this node").
+ * Rendering them as static HTML keeps React out of their insides.
+ */
+function escapeHTML(text: string) {
+  return text
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
+}
 
 export default Hero;

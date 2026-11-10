@@ -137,3 +137,9 @@ body:has([data-next-project]) [data-footer] {
 footer[data-marquee-paused] [data-marquee] {
   animation-play-state: paused;
 }
+
+/* The logo's yellow bars sit in their own layer (components/Nav); grow them
+   with the letters when the logo link is hovered or focused. */
+body:has([data-nav="logo"]:is(:hover, :focus-visible)) [data-nav-bars-scale] {
+  transform: scale(1.1);
+}
