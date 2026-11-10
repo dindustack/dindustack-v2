@@ -20,10 +20,12 @@ export default function SmoothScroller({
 
   useGSAP(
     () => {
+      // No smoothing lag for people who ask their device to reduce motion.
+      const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
       const smoother = ScrollSmoother.create({
         wrapper: wrapper.current,
         content: content.current,
-        smooth: 1.2,
+        smooth: reduce ? 0 : 1.2,
         effects: true,
         smoothTouch: false,
       });

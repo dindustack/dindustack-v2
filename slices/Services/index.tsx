@@ -67,9 +67,9 @@ const Services = ({ slice }: ServicesProps) => {
     >
       <div className="mx-auto flex w-full max-w-373 flex-1 flex-col">
         {slice.primary.label ? (
-          <p className="text-[18px] leading-[1.39] italic">
+          <h2 className="text-[18px] leading-[1.39] italic">
             {slice.primary.label}
-          </p>
+          </h2>
         ) : null}
 
         <p className="mt-10 font-display text-[clamp(2.5rem,5.1vw,5.5rem)] leading-[1.41] tracking-[-0.02em] lg:mt-[7svh]">
@@ -85,7 +85,7 @@ const Services = ({ slice }: ServicesProps) => {
                   className={`font-accent font-light italic underline decoration-1 underline-offset-[0.14em] transition-[color,text-decoration-color] duration-500 ease-out motion-reduce:transition-none ${
                     isActive
                       ? "text-black decoration-black"
-                      : "text-black decoration-black lg:text-black/12 lg:decoration-black/3"
+                      : "text-black decoration-black lg:text-black/55 lg:decoration-black/15"
                   }`}
                 >
                   {service.keyword}

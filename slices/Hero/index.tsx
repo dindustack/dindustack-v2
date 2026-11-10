@@ -69,10 +69,14 @@ const Hero: FC<HeroProps> = ({ slice }) => {
           </div>
         </div>
 
-        <div className="mt-auto overflow-hidden pb-[11svh] lg:pb-[4svh]">
-          <h1 data-animate="name" data-intro className="hero-name">
-            {slice.primary.name}
-          </h1>
+        <div className="mt-auto pb-[11svh] lg:pb-[4svh]">
+          {/* Clips the letters as they rise. No padding of its own, so a
+              letter waiting below is fully out of sight. */}
+          <div className="hero-name-clip">
+            <h1 data-animate="name" data-intro className="hero-name">
+              {slice.primary.name}
+            </h1>
+          </div>
         </div>
       </HeroMotion>
     </section>

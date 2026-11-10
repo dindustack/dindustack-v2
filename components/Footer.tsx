@@ -1,4 +1,5 @@
 import FooterMotion from "./FooterMotion";
+import MarqueePause from "./MarqueePause";
 
 const EMAIL = "contact@dindustack.com";
 
@@ -46,23 +47,31 @@ export default function Footer() {
         data-surface="blush"
         className="relative z-10 flex min-h-lvh flex-col justify-between overflow-hidden bg-blush pb-7.5 pt-[20svh] text-ink shadow-[0_-24px_60px_rgba(21,9,8,0.08)]"
       >
-        <p className="page-gutter text-[clamp(32px,3.47vw,60px)] leading-none tracking-[-0.05em]">
+        <h2 className="page-gutter text-[clamp(32px,3.47vw,60px)] leading-none tracking-[-0.05em]">
           Let&rsquo;s make great work together
-        </p>
+        </h2>
 
         <a
           href={`mailto:${EMAIL}`}
           aria-label={`Email ${EMAIL}`}
-          className="font-display block py-10 text-[max(64px,9.05vw)] leading-none tracking-hero text-black/80 transition-colors hover:text-black"
+          className="group font-display block py-10 text-[max(64px,9.05vw)] leading-none tracking-hero text-black/80 transition-colors hover:text-black"
         >
-          <span className="flex w-max animate-marquee motion-reduce:animate-none">
+          {/* Holds still while hovered or focused; the button below stops
+              it for good. */}
+          <span
+            data-marquee
+            className="flex w-max animate-marquee group-hover:[animation-play-state:paused] group-focus-visible:[animation-play-state:paused] motion-reduce:animate-none"
+          >
             <Run />
             <Run />
           </span>
         </a>
 
         <div className="page-gutter flex flex-col-reverse gap-4 text-[clamp(18px,1.39vw,24px)] tracking-[-0.05em] sm:flex-row sm:items-end sm:justify-between">
-          <p>&copy;{new Date().getFullYear()}. All Rights Reserved</p>
+          <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
+            <p>&copy;{new Date().getFullYear()}. All Rights Reserved</p>
+            <MarqueePause />
+          </div>
           <ul className="flex flex-wrap gap-x-4 gap-y-2">
             {SOCIALS.map((s) => (
               <li key={s.label}>
@@ -73,6 +82,7 @@ export default function Footer() {
                   className="transition-opacity hover:opacity-60"
                 >
                   {s.label}
+                  <span className="sr-only"> (opens in a new tab)</span>
                 </a>
               </li>
             ))}

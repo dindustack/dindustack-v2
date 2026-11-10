@@ -234,6 +234,22 @@ export default function WorksMotion({
           };
           const onDragStart = (e: DragEvent) => e.preventDefault();
 
+          // Tabbing to a project that sits off to the side brings it into
+          // focus, so the keyboard focus is never somewhere unseen.
+          const onFocusIn = (e: FocusEvent) => {
+            // Keyboard focus only; a mouse click or drag focuses too.
+            if (!(e.target as HTMLElement | null)?.matches(":focus-visible")) return;
+            const card = (e.target as HTMLElement | null)?.closest<HTMLElement>(
+              "[data-works='card']"
+            );
+            const index = card ? cards.indexOf(card) : -1;
+            if (index < 0) return;
+            const y = currentScroll();
+            const inRow = y >= st.start - 2 && y <= st.end + 2;
+            if (index !== active || !inRow) scrollTo(scrollFor(index), !reduce);
+          };
+
+          row?.addEventListener("focusin", onFocusIn);
           row?.addEventListener("pointerdown", onDown);
           window.addEventListener("pointermove", onMove);
           window.addEventListener("pointerup", onUp);
@@ -244,6 +260,7 @@ export default function WorksMotion({
 
           return () => {
             window.removeEventListener("keydown", onKey);
+            row?.removeEventListener("focusin", onFocusIn);
             row?.removeEventListener("pointerdown", onDown);
             window.removeEventListener("pointermove", onMove);
             window.removeEventListener("pointerup", onUp);

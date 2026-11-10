@@ -41,7 +41,8 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Chinwendu Agbaetuo",
+  // Each page sets its own title; this adds the name after it.
+  title: { default: "Chinwendu Agbaetuo", template: "%s | Chinwendu Agbaetuo" },
   description: "Creative developer in Texas",
 };
 
@@ -56,12 +57,22 @@ export default function RootLayout({
       className={`${marcellus.variable} ${gentium.variable} ${inter.variable} ${merriweather.variable}`}
     >
       <body className="bg-blush text-ink antialiased" suppressHydrationWarning>
+        {/* First stop for keyboard users: jumps past the nav. Hidden until
+            it receives focus. */}
+        <a
+          href="#main"
+          className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-100 focus:bg-ink focus:px-4 focus:py-2 focus:text-white"
+        >
+          Skip to content
+        </a>
         <Nav />
         <PageTransition />
         <SmoothScroller>
           {/* One wrapper around every page, so the footer can move the page
               as it rises without touching any pinned section inside. */}
-          <div data-page>{children}</div>
+          <main id="main" data-page tabIndex={-1} className="focus:outline-none">
+            {children}
+          </main>
           <Footer />
         </SmoothScroller>
       </body>

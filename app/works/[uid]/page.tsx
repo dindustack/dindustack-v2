@@ -62,7 +62,7 @@ export default async function ProjectPage({
                 <PrismicNextLink
                   field={project.data.visit_url}
                   data-animate="detail"
-                  className="inline-flex items-center gap-1 self-start text-[15px] font-bold uppercase leading-none tracking-[0.04em] hover:opacity-60"
+                  className="-my-1.5 inline-flex items-center gap-1 self-start py-1.5 text-[15px] font-bold uppercase leading-none tracking-[0.04em] hover:opacity-60"
                 >
                   Visit website
                   <ArrowUpRight />
@@ -116,20 +116,22 @@ export default async function ProjectPage({
             aria-label="Projects"
             className="flex items-center gap-0.5 px-[var(--gutter)] pb-10 text-[14px] font-bold leading-none text-umber lg:absolute lg:bottom-6 lg:right-[var(--gutter)] lg:p-0"
           >
-            <span className="tracking-nav">P</span>
-            <span className="tracking-nav">-</span>
-            <ul className="ml-0.5 flex items-center gap-2">
+            <span aria-hidden className="tracking-nav">P</span>
+            <span aria-hidden className="tracking-nav">-</span>
+            {/* Each number is a 24px target; the boxes touch, which keeps
+                the numbers evenly spaced without extra gap. */}
+            <ul className="flex items-center">
               {projects.map((p, i) => (
                 <li key={p.id}>
                   <PrismicNextLink
                     document={p}
                     aria-current={p.id === project.id ? "page" : undefined}
-                    aria-label={p.data.title ?? `Project ${i + 1}`}
-                    className={
+                    aria-label={`Project ${i + 1}${p.data.title ? `: ${p.data.title}` : ""}`}
+                    className={`inline-flex h-6 min-w-6 items-center justify-center ${
                       p.id === project.id
                         ? "text-umber"
-                        : "text-black/10 transition-colors hover:text-umber"
-                    }
+                        : "text-black/60 transition-colors hover:text-umber"
+                    }`}
                   >
                     {i + 1}
                   </PrismicNextLink>

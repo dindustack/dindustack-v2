@@ -55,6 +55,13 @@
     letter-spacing: var(--tracking-body);
   }
 
+  /* One focus ring everywhere, shown only for keyboard focus. It takes the
+     text colour, so it reads on blush and on ink alike. */
+  :focus-visible {
+    outline: 2px solid currentColor;
+    outline-offset: 3px;
+  }
+
   /* ScrollSmoother owns scrolling. Native smooth scrolling fights it. */
   html {
     scroll-behavior: auto;
@@ -76,6 +83,19 @@
  * the full content width at every viewport, so size is derived from the
  * 192.52 / 1664 ratio measured in Figma. Never allow this to wrap.
  */
+/*
+  The clip around the hero name. Same font size as the name, so its extra
+  room below is measured in the name's own em: deep enough for descenders
+  (the g in Agbaetuo), then pulled back with a negative margin so the name
+  sits exactly where it did.
+*/
+@utility hero-name-clip {
+  overflow: hidden;
+  font-size: calc((100vw - 2 * var(--gutter)) * 0.108);
+  padding-bottom: 0.2em;
+  margin-bottom: -0.2em;
+}
+
 @utility hero-name {
   font-family: var(--font-display);
   font-size: calc((100vw - 2 * var(--gutter)) * 0.108);
@@ -111,4 +131,9 @@ body:has([data-next-project]) [data-footer] {
 }
 @keyframes intro-fallback {
   to { visibility: visible; }
+}
+
+/* Footer marquee stopped with its pause button (components/MarqueePause). */
+footer[data-marquee-paused] [data-marquee] {
+  animation-play-state: paused;
 }

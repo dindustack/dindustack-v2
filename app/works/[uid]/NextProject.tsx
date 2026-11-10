@@ -140,7 +140,12 @@ export default function NextProject({
 
     const onKey = (e: KeyboardEvent) => {
       const target = e.target as HTMLElement | null;
-      if (target?.closest("input, textarea, select, [contenteditable]")) return;
+      if (
+        target?.closest(
+          "a, button, input, textarea, select, [contenteditable], [role='button']"
+        )
+      )
+        return;
       if (!atEnd()) return;
       if (["ArrowDown", "PageDown", "End", " "].includes(e.key)) {
         e.preventDefault();

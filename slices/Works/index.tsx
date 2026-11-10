@@ -45,9 +45,9 @@ const Works = async ({ slice }: WorksProps) => {
       }`}
     >
       <WorksMotion count={projects.length}>
-        <h2 className="font-display page-gutter relative z-10 pt-[83px] text-heading tracking-[var(--tracking-heading)]">
+        <h1 className="font-display page-gutter relative z-10 pt-[83px] text-heading tracking-[var(--tracking-heading)]">
           {slice.primary.heading}
-        </h2>
+        </h1>
 
         <div
           data-works="row"

@@ -73,9 +73,17 @@ export default function HeroMotion({
         );
 
         if (nameSplit) {
-          tl.from(
+          // Each letter is invisible until its own turn, then fades in as
+          // it slides up, so no part of it shows while it waits.
+          gsap.set(nameSplit.chars, { yPercent: 150, autoAlpha: 0 });
+          tl.to(
             nameSplit.chars,
-            { yPercent: 110, duration: 0.9, stagger: 0.2 },
+            {
+              yPercent: 0,
+              autoAlpha: 1,
+              duration: 0.9,
+              stagger: 0.2,
+            },
             2
           );
         }

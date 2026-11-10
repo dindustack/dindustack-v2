@@ -139,8 +139,18 @@ export default function ScrollToWorks() {
         );
     };
 
+    // The hero can be taller than the screen (phones, zoomed-in desktops).
+    // Scroll it normally until its bottom edge is on screen; only a scroll
+    // past that point leaves for Works, so nothing in it is skipped.
+    const atEnd = () =>
+      !hero || hero.getBoundingClientRect().bottom <= window.innerHeight + 4;
+
     const onWheel = (e: WheelEvent) => {
       if (e.ctrlKey) return; // pinch-zoom on trackpads
+      if (!atEnd()) {
+        wheelTotal = 0;
+        return;
+      }
       if (e.deltaY <= 0) {
         wheelTotal = 0;
         return;
@@ -156,6 +166,10 @@ export default function ScrollToWorks() {
 
     const onTouchMove = (e: TouchEvent) => {
       if (touchStartY === null) return;
+      if (!atEnd()) {
+        touchStartY = e.touches[0]?.clientY ?? null;
+        return;
+      }
       const dy = touchStartY - (e.touches[0]?.clientY ?? touchStartY);
       if (dy > 0) e.preventDefault();
       if (dy > 50) go();
@@ -163,7 +177,13 @@ export default function ScrollToWorks() {
 
     const onKey = (e: KeyboardEvent) => {
       const target = e.target as HTMLElement | null;
-      if (target?.closest("input, textarea, select, [contenteditable]")) return;
+      if (
+        target?.closest(
+          "a, button, input, textarea, select, [contenteditable], [role='button']"
+        )
+      )
+        return;
+      if (!atEnd()) return;
       if (["ArrowDown", "PageDown", "End", " "].includes(e.key)) {
         e.preventDefault();
         go();
