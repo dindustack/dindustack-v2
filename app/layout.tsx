@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Marcellus, Gentium_Book_Plus, Inter, Merriweather } from "next/font/google";
+import { Marcellus, Gentium_Book_Plus, Merriweather } from "next/font/google";
 import { PrismicPreview } from "@prismicio/next";
 import { repositoryName } from "@/prismicio";
 import SmoothScroller from "@/components/SmoothScroller";
@@ -30,15 +30,11 @@ const merriweather = Merriweather({
   weight: "300",
   style: "italic",
   variable: "--font-merriweather",
+  // Used on the About page only, so not preloaded on every page.
+  preload: false,
   display: "swap",
 });
 
-const inter = Inter({
-  subsets: ["latin"],
-  weight: ["900"],
-  variable: "--font-inter",
-  display: "swap",
-});
 
 export const metadata: Metadata = {
   // Each page sets its own title; this adds the name after it.
@@ -54,7 +50,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${marcellus.variable} ${gentium.variable} ${inter.variable} ${merriweather.variable}`}
+      className={`${marcellus.variable} ${gentium.variable} ${merriweather.variable}`}
     >
       <body className="bg-blush text-ink antialiased" suppressHydrationWarning>
         {/* First stop for keyboard users: jumps past the nav. Hidden until

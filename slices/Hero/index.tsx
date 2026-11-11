@@ -46,7 +46,6 @@ const Hero: FC<HeroProps> = ({ slice }) => {
             {isFilled.image(slice.primary.portrait) ? (
               <div
                 data-animate="portrait"
-                data-intro
                 className="relative order-1 aspect-316/393 w-65 shrink-0 overflow-hidden bg-rose lg:order-2 lg:w-79"
               >
                 <PrismicNextImage

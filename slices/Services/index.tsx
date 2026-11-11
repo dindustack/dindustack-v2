@@ -63,6 +63,7 @@ const Services = ({ slice }: ServicesProps) => {
       ref={root}
       data-slice-type={slice.slice_type}
       data-slice-variation={slice.variation}
+      data-surface="blush"
       className="content-shell flex min-h-svh flex-col bg-blush py-24 text-ink lg:pt-[11.6svh] lg:pb-[7svh]"
     >
       <div className="mx-auto flex w-full max-w-373 flex-1 flex-col">

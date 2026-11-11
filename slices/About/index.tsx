@@ -13,6 +13,7 @@ const About = ({ slice }: AboutProps) => {
     <section
       data-slice-type={slice.slice_type}
       data-slice-variation={slice.variation}
+      data-surface={isInk ? "ink" : "blush"}
       className={`content-shell flex min-h-svh items-start py-24 lg:pt-41 lg:pb-24 ${
         isInk ? "bg-ink text-white" : "bg-blush text-ink"
       }`}

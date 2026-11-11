@@ -20,7 +20,6 @@
   /* Families are bound to the next/font variables set in layout.tsx */
   --font-display: var(--font-marcellus);
   --font-body: var(--font-gentium);
-  --font-mark: var(--font-inter);
   --font-accent: var(--font-merriweather);
 
   /* Fluid display sizes. Body stays fixed at 16px on purpose. */
@@ -136,10 +135,4 @@ body:has([data-next-project]) [data-footer] {
 /* Footer marquee stopped with its pause button (components/MarqueePause). */
 footer[data-marquee-paused] [data-marquee] {
   animation-play-state: paused;
-}
-
-/* The logo's yellow bars sit in their own layer (components/Nav); grow them
-   with the letters when the logo link is hovered or focused. */
-body:has([data-nav="logo"]:is(:hover, :focus-visible)) [data-nav-bars-scale] {
-  transform: scale(1.1);
 }

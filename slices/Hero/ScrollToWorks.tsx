@@ -137,6 +137,18 @@ export default function ScrollToWorks() {
           },
           0.3
         );
+
+      // The nav turns white as the ink curtain reaches the top. (The
+      // curtain ignores the pointer, so the nav's own surface check
+      // cannot see it.)
+      timeline.call(
+        () =>
+          document
+            .querySelector<HTMLElement>("[data-nav-header]")
+            ?.setAttribute("data-tone", "white"),
+        undefined,
+        0.75
+      );
     };
 
     // The hero can be taller than the screen (phones, zoomed-in desktops).

@@ -15,10 +15,11 @@ export const FINISH_INTRO = "hero:finish-intro";
  * NavMotion); this sequence starts one step after it, each step one second
  * after the previous one starts:
  *
- *   1s  the picture
- *   2s  the name, letter by letter, 200ms apart, rising from behind its own
+ *   0s  the picture is already there, not animated: it is the largest
+ *       thing on screen, so showing it at once keeps load time (LCP) low
+ *   1s  the name, letter by letter, 200ms apart, rising from behind its own
  *       overflow-hidden wrapper
- *   3s  the write-up, typed out character by character, left then right
+ *   2s  the write-up, typed out character by character, left then right
  *
  * Elements marked data-intro start hidden in CSS (globals.css) so nothing
  * flashes before this runs; a CSS fallback reveals them if script never does.
@@ -51,7 +52,11 @@ export default function HeroMotion({
           ? SplitText.create(name, { type: "chars", aria: "auto" })
           : null;
         const introSplits = intros.map((el) =>
-          SplitText.create(el, { type: "chars,words", aria: "auto" })
+          // "hidden", not "auto": auto puts an aria-label on this plain div,
+          // which ARIA does not allow (Lighthouse flags it). The letters are
+          // hidden from screen readers only while the typing plays; the
+          // split is reverted when it ends, restoring the plain text.
+          SplitText.create(el, { type: "chars,words", aria: "hidden" })
         );
 
         const tl = gsap.timeline({
@@ -66,12 +71,6 @@ export default function HeroMotion({
 
         gsap.set(pending, { visibility: "visible" });
 
-        tl.from(
-          "[data-animate='portrait']",
-          { autoAlpha: 0, scale: 1.04, duration: 0.9 },
-          1
-        );
-
         if (nameSplit) {
           // Each letter is invisible until its own turn, then fades in as
           // it slides up, so no part of it shows while it waits.
@@ -84,13 +83,13 @@ export default function HeroMotion({
               duration: 0.9,
               stagger: 0.2,
             },
-            2
+            1
           );
         }
 
         // Typing: each character appears at once, in order. The pace adapts
         // so each block types out in about two seconds whatever its length.
-        let at = 3;
+        let at = 2;
         introSplits.forEach((split) => {
           const chars = split.chars;
           if (!chars.length) return;

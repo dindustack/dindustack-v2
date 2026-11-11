@@ -6,24 +6,30 @@ import NavMotion from "./NavMotion";
 const HOVER =
   "inline-block transition-transform duration-300 ease-out hover:scale-110 focus-visible:scale-110";
 
-/** The logo's box, shared by both layers so the two halves line up. */
-const LOGO_BOX = "pt-5";
-
+/**
+ * The nav is ink over blush sections and white over ink ones. NavMotion
+ * watches which section is under it (each carries data-surface) and sets
+ * data-tone on the header. Real colours rather than a blend, so contrast is
+ * what it looks like, for people and for accessibility checkers alike.
+ */
 export default function Nav() {
   return (
     <NavMotion>
-      {/* Blended layer: flips between black and white against the page. */}
-      <header className="page-gutter fixed inset-x-0 top-0 z-50 text-white mix-blend-difference">
+      <header
+        data-nav-header
+        data-tone="ink"
+        className="page-gutter fixed inset-x-0 top-0 z-50 text-ink transition-colors duration-300 data-[tone=white]:text-white"
+      >
         <div className="flex items-start justify-between">
           <Link
             href="/"
             aria-label="dindustack, home"
             data-nav="logo"
             data-intro
-            className={`group ${LOGO_BOX}`}
+            className="group pt-5"
           >
-            <span data-nav-logo-scale className="block origin-left transition-transform duration-300 ease-out group-hover:scale-110 group-focus-visible:scale-110">
-              <Logo part="letters" />
+            <span className="block origin-left transition-transform duration-300 ease-out group-hover:scale-110 group-focus-visible:scale-110">
+              <Logo />
             </span>
           </Link>
 
@@ -41,23 +47,6 @@ export default function Nav() {
           </nav>
         </div>
       </header>
-
-      {/*
-        Unblended layer for the logo's yellow bars, laid exactly over the
-        letters. A blend would turn the yellow blue on the blush pages. It
-        copies the logo's entrance and hover (see globals.css) and ignores
-        the pointer, so the link underneath still gets every click.
-      */}
-      <div
-        aria-hidden
-        className="page-gutter pointer-events-none fixed inset-x-0 top-0 z-50"
-      >
-        <div data-nav="logo" data-intro className={`w-max ${LOGO_BOX}`}>
-          <span data-nav-bars-scale className="block origin-left transition-transform duration-300 ease-out">
-            <Logo part="bars" />
-          </span>
-        </div>
-      </div>
     </NavMotion>
   );
 }

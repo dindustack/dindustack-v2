@@ -1,6 +1,7 @@
 "use client";
 
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
+import { usePathname } from "next/navigation";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 
@@ -39,6 +40,41 @@ export default function NavMotion({ children }: { children: React.ReactNode }) {
     },
     { scope: root }
   );
+
+  // Tone: look at what sits under the middle of the nav bar and take its
+  // surface. Checked on scroll (once per frame), resize and route change.
+  const pathname = usePathname();
+  useEffect(() => {
+    const header = root.current?.querySelector<HTMLElement>("[data-nav-header]");
+    if (!header) return;
+
+    let frame = 0;
+    const update = () => {
+      frame = 0;
+      const y = header.getBoundingClientRect().bottom / 2;
+      const x = window.innerWidth / 2;
+      const under = document
+        .elementsFromPoint(x, y)
+        .find((el) => !header.contains(el) && el.closest("[data-surface]"));
+      const surface = under?.closest<HTMLElement>("[data-surface]")?.dataset.surface;
+      header.dataset.tone = surface === "ink" ? "white" : "ink";
+    };
+    const schedule = () => {
+      if (!frame) frame = requestAnimationFrame(update);
+    };
+
+    schedule();
+    // Again once the new page has laid out and ScrollSmoother has reset.
+    const late = window.setTimeout(update, 400);
+    window.addEventListener("scroll", schedule, { passive: true });
+    window.addEventListener("resize", schedule);
+    return () => {
+      cancelAnimationFrame(frame);
+      window.clearTimeout(late);
+      window.removeEventListener("scroll", schedule);
+      window.removeEventListener("resize", schedule);
+    };
+  }, [pathname]);
 
   return (
     <div ref={root} className="contents">
