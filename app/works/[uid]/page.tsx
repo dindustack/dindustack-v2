@@ -43,15 +43,15 @@ export default async function ProjectPage({
         <ProjectGallery count={gallery.length}>
           <div className="flex flex-col gap-12 px-[var(--gutter)] pb-10 pt-30 lg:absolute lg:inset-x-0 lg:bottom-[22.2svh] lg:flex-row lg:items-start lg:gap-0 lg:p-0 lg:pl-[9.72vw]">
             {/*
-              Outlined title, drawn white with a difference blend so the
-              outline shows dark on blush and light over dark screenshots. On desktop it sits above the row and runs into
+              Outlined title: an ink outline with a thin white halo, so it
+              reads on blush, on dark screenshots and on mid-tones alike. On desktop it sits above the row and runs into
               the first screenshot: first word, then the rest stepped in.
               Measured from the 1728 frame: 152px type on 108px lines, its
               top 110px above the screenshots.
             */}
             <h1
               data-animate="detail"
-              className="font-bold text-[clamp(56px,8.8vw,152px)] leading-[0.85] lg:leading-[0.71] tracking-[-0.04em] text-transparent [-webkit-text-stroke:1px_#fff] mix-blend-difference lg:pointer-events-none lg:absolute lg:left-[9.72vw] lg:top-[-6.37vw] lg:z-10"
+              className="font-bold text-[clamp(56px,8.8vw,152px)] leading-[0.85] lg:leading-[0.71] tracking-[-0.04em] text-transparent [-webkit-text-stroke:1px_var(--color-ink)] [filter:drop-shadow(0_0_0.6px_#fff)_drop-shadow(0_0_0.6px_#fff)] lg:pointer-events-none lg:absolute lg:left-[9.72vw] lg:top-[-6.37vw] lg:z-10"
             >
               <TitleLines title={project.data.title ?? ""} />
             </h1>
@@ -63,7 +63,7 @@ export default async function ProjectPage({
                 ) : null}
 
                 {isFilled.richText(project.data.summary) ? (
-                  <div data-animate="detail">
+                  <div data-animate="detail" className="text-prose leading-[1.45]">
                     <PrismicRichText field={project.data.summary} />
                   </div>
                 ) : null}
@@ -202,9 +202,10 @@ function TitleLines({ title }: { title: string }) {
   return (
     <>
       <span className="block">{first}</span>
-      {/* Stepped in to start where the text column ends, so a letter
-          with a tail (the J of Jesutedo) clears the description. */}
-      <span className="block lg:pl-[calc(max(21.59vw,280px)+0.3em)]">
+      {/* The same step for every project, as in Figma: 373px at 152px
+          type. Short first words leave a gap and long ones overlap; the
+          title may run over the text beneath it. */}
+      <span className="block lg:pl-[2.45em]">
         {" "}
         {rest.join(" ")}
       </span>
