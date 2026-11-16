@@ -73,12 +73,13 @@ export default function HeroMotion({
 
         gsap.set(pending, { visibility: "visible" });
 
-        // 1. Pictures flash through the portrait box, about 100ms each,
+        // 1. Pictures flash through the portrait box, about 150ms each,
         //    then the last one goes and the portrait underneath remains.
         const flashes = Array.from(
           scope.querySelectorAll<HTMLElement>("[data-flash]")
         );
-        const STEP = 0.1;
+        // Seconds each picture stays up. 0.1 felt too fast.
+        const STEP = 0.15;
         flashes.forEach((img, i) => {
           tl.set(img, { visibility: "visible" }, i * STEP);
           if (i > 0) tl.set(flashes[i - 1], { visibility: "hidden" }, i * STEP);

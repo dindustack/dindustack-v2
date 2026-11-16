@@ -58,8 +58,10 @@ const Hero: FC<HeroProps> = ({ slice }) => {
                 />
                 {/*
                   Pictures that flash through the box on load before
-                  settling on the portrait underneath (HeroMotion). Hidden
-                  until then, so without script the portrait just shows.
+                  settling on the portrait underneath (HeroMotion), shown in
+                  black and white so the colour portrait lands as the reveal.
+                  Hidden until then, so without script the portrait just
+                  shows.
                 */}
                 {slice.primary.flash_images
                   .filter((item) => isFilled.image(item.image))
@@ -75,7 +77,7 @@ const Hero: FC<HeroProps> = ({ slice }) => {
                       loading="eager"
                       fetchPriority="low"
                       sizes="(min-width: 1024px) 316px, 260px"
-                      className="invisible object-cover"
+                      className="invisible object-cover grayscale"
                     />
                   ))}
               </div>
