@@ -56,6 +56,28 @@ const Hero: FC<HeroProps> = ({ slice }) => {
                   sizes="(min-width: 1024px) 316px, 260px"
                   className="object-cover"
                 />
+                {/*
+                  Pictures that flash through the box on load before
+                  settling on the portrait underneath (HeroMotion). Hidden
+                  until then, so without script the portrait just shows.
+                */}
+                {slice.primary.flash_images
+                  .filter((item) => isFilled.image(item.image))
+                  .slice(0, 10)
+                  .map((item, i) => (
+                    <PrismicNextImage
+                      key={i}
+                      field={item.image}
+                      fill
+                      alt=""
+                      aria-hidden
+                      data-flash
+                      loading="eager"
+                      fetchPriority="low"
+                      sizes="(min-width: 1024px) 316px, 260px"
+                      className="invisible object-cover"
+                    />
+                  ))}
               </div>
             ) : null}
 

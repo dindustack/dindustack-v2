@@ -437,6 +437,21 @@ type AboutSliceVariation = AboutSliceDefault
 export type AboutSlice = prismic.SharedSlice<"about", AboutSliceVariation>;
 
 /**
+ * Item in *Hero → Default → Primary → Flash images*
+ */
+export interface HeroSliceDefaultPrimaryFlashImagesItem {
+	/**
+	 * Image field in *Hero → Default → Primary → Flash images*
+	 *
+	 * - **Field Type**: Image
+	 * - **Placeholder**: *None*
+	 * - **API ID Path**: hero.default.primary.flash_images[].image
+	 * - **Documentation**: https://prismic.io/docs/fields/image
+	 */
+	image: prismic.ImageField<never>;
+}
+
+/**
  * Primary content in *Hero → Default → Primary*
  */
 export interface HeroSliceDefaultPrimary {
@@ -490,6 +505,16 @@ export interface HeroSliceDefaultPrimary {
 	 * - **Documentation**: https://prismic.io/docs/fields/image
 	 */
 	portrait: prismic.ImageField<never>;
+	
+	/**
+	 * Flash images field in *Hero → Default → Primary*
+	 *
+	 * - **Field Type**: Group
+	 * - **Placeholder**: *None*
+	 * - **API ID Path**: hero.default.primary.flash_images[]
+	 * - **Documentation**: https://prismic.io/docs/fields/repeatable-group
+	 */
+	flash_images: prismic.GroupField<Simplify<HeroSliceDefaultPrimaryFlashImagesItem>>;
 }
 
 /**
@@ -692,6 +717,7 @@ declare module "@prismicio/client" {
 			AboutSliceVariation,
 			AboutSliceDefault,
 			HeroSlice,
+			HeroSliceDefaultPrimaryFlashImagesItem,
 			HeroSliceDefaultPrimary,
 			HeroSliceVariation,
 			HeroSliceDefault,

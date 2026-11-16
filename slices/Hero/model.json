@@ -58,6 +58,25 @@
             "thumbnails": []
           },
           "type": "Image"
+        },
+        "flash_images": {
+          "type": "Group",
+          "config": {
+            "label": "Flash images",
+            "fields": {
+              "image": {
+                "type": "Image",
+                "config": {
+                  "label": "Image",
+                  "constraint": {
+                    "width": 948,
+                    "height": 1179
+                  },
+                  "thumbnails": []
+                }
+              }
+            }
+          }
         }
       },
       "version": "initial"
