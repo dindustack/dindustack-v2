@@ -28,8 +28,8 @@ const Hero: FC<HeroProps> = ({ slice }) => {
       {/* First scroll down leaves for the Works page. */}
       <ScrollToWorks />
       <HeroMotion>
-        <div className="flex flex-1 items-center justify-center py-32 lg:absolute lg:inset-x-0 lg:top-[24svh] lg:py-0">
-          <div className="flex w-full max-w-272 flex-col items-center gap-12 lg:flex-row lg:gap-24">
+        <div className="flex flex-1 items-center justify-center pb-5 pt-20 lg:absolute lg:inset-x-0 lg:top-[24svh] lg:py-0">
+          <div className="flex w-full max-w-272 flex-col items-center gap-5 lg:flex-row lg:gap-24">
             {isFilled.richText(slice.primary.intro_left) ? (
               <div
                 data-animate="intro"
@@ -46,7 +46,7 @@ const Hero: FC<HeroProps> = ({ slice }) => {
             {isFilled.image(slice.primary.portrait) ? (
               <div
                 data-animate="portrait"
-                className="relative order-1 aspect-316/393 w-65 shrink-0 overflow-hidden bg-rose lg:order-2 lg:w-79"
+                className="relative order-1 aspect-316/393 h-[min(36svh,323px)] shrink-0 overflow-hidden bg-rose lg:order-2 lg:h-auto lg:w-79"
               >
                 <PrismicNextImage
                   field={slice.primary.portrait}
@@ -95,7 +95,7 @@ const Hero: FC<HeroProps> = ({ slice }) => {
           </div>
         </div>
 
-        <div className="mt-auto pb-[11svh] lg:pb-[4svh]">
+        <div className="mt-auto pb-5 lg:pb-[4svh]">
           {/* Clips the letters as they rise. No padding of its own, so a
               letter waiting below is fully out of sight. */}
           <div className="hero-name-clip">
