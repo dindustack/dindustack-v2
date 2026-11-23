@@ -4,35 +4,10 @@ import { useEffect, useRef } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import gsap from "gsap";
 
-const OVERLAY_ID = "page-transition";
+import { OVERLAY_ID, loadCloth, startCloth, takeActiveCloth } from "./clothNav";
 
-/** The cloth effect and three.js, loaded only when a page has project links. */
-type ClothModule = typeof import("./clothTransition");
-let clothModule: Promise<ClothModule> | null = null;
-const loadCloth = () => (clothModule ??= import("./clothTransition"));
-
-/** The running cloth sheet, flown away and torn down once the new page is in. */
-let activeCloth: import("./clothTransition").ClothHandle | null = null;
 /** The card image hidden while the cloth lifts off it. */
 let hiddenFrame: HTMLElement | null = null;
-
-/** Loads a CORS-clean copy of the image for WebGL, or fails within 800ms. */
-function loadTextureImage(src: string): Promise<HTMLImageElement> {
-  return new Promise((resolve, reject) => {
-    const image = new Image();
-    image.crossOrigin = "anonymous";
-    const timer = window.setTimeout(() => reject(new Error("timeout")), 800);
-    image.onload = () => {
-      window.clearTimeout(timer);
-      resolve(image);
-    };
-    image.onerror = () => {
-      window.clearTimeout(timer);
-      reject(new Error("image"));
-    };
-    image.src = src;
-  });
-}
 
 /**
  * Image-zoom page transition, mounted once in the root layout.
@@ -140,39 +115,20 @@ export default function PageTransition() {
 
       // Cloth first; if WebGL, the module or the image is not available in
       // time, fall back to the plain zoom above.
-      (async () => {
-        try {
-          const cloth = await loadCloth();
-          if (!cloth.supportsCloth()) throw new Error("webgl");
-          const image = await loadTextureImage(src);
-
-          const host = document.createElement("div");
-          host.id = OVERLAY_ID;
-          host.setAttribute("aria-hidden", "true");
-          Object.assign(host.style, {
-            position: "fixed",
-            inset: "0",
-            zIndex: "60",
-            pointerEvents: "none",
-          });
-          document.body.appendChild(host);
-
-          const handle = cloth.playCloth({
-            host,
-            image,
-            from: rect,
-            onCovered: () => router.push(href),
-          });
-          activeCloth = handle;
-
-          // The sheet now sits over the card; hide the card so nothing is
-          // left behind as it lifts off.
-          frame.style.visibility = "hidden";
-          hiddenFrame = frame;
-        } catch {
+      void startCloth({
+        from: rect,
+        src,
+        onCovered: () => router.push(href),
+      }).then((started) => {
+        if (!started) {
           zoom();
+          return;
         }
-      })();
+        // The sheet now sits over the card; hide the card so nothing is
+        // left behind as it lifts off.
+        frame.style.visibility = "hidden";
+        hiddenFrame = frame;
+      });
     };
 
     document.addEventListener("click", onClick, true);
@@ -182,11 +138,10 @@ export default function PageTransition() {
   // The route has changed: fade the covering image away to reveal the page.
   useEffect(() => {
     const overlay = document.getElementById(OVERLAY_ID);
-    const cloth = activeCloth;
+    const cloth = takeActiveCloth();
     if (overlay && cloth) {
-      // Cloth: once the new page has rendered beneath it, the sheet is
-      // pulled off to the right, revealing the project.
-      activeCloth = null;
+      // Cloth: once the new page has rendered beneath it, the sheet drifts
+      // off to the right, fading as it goes, revealing the project.
       window.setTimeout(() => {
         void cloth.flyAway().then(() => {
           cloth.dispose();

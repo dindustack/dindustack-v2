@@ -24,8 +24,8 @@ import gsap from "gsap";
  * sheet as ripples instead of moving it rigidly. Points far from the centre
  * trail behind, like the corners of a sheet that is being lifted.
  *
- * Loaded on demand (PageTransition imports it), so three.js never weighs on
- * a page's first load.
+ * Loaded on demand (clothNav imports it), so three.js never weighs on a
+ * page's first load.
  */
 
 /** Grid resolution of the sheet: segments across and down. */
@@ -42,8 +42,8 @@ const PULL = 70;
 const DAMPING = 7;
 
 export type ClothHandle = {
-  /** Pulls the flat, full-screen sheet off to the right like cloth,
-   *  revealing what is underneath. Resolves once it is off screen. */
+  /** Pulls the flat, full-screen sheet off to the right, fading as it
+   *  goes, revealing what is underneath. Resolves once it has gone. */
   flyAway: () => Promise<void>;
   /** Removes the canvas's GPU resources. The caller removes the element. */
   dispose: () => void;
@@ -86,17 +86,17 @@ const vertex = /* glsl */ `
     // the last frame matches the flat full-screen image exactly.
     pos.z = aZ * uFlat;
 
-    // Fly away: the right edge is pulled first and the rest follows, so
-    // the sheet stretches, lifts and ripples as it whips off the screen.
+    // Away: the right edge leads and the rest follows, so the sheet drifts
+    // off to the right with a gentle swell, like the demo's titles.
     if (uAway > 0.0) {
       float lag = (1.0 - uv.x) * 0.5 + abs(uv.y - 0.5) * 0.2;
       float a = clamp(uAway * 1.7 - lag, 0.0, 1.0);
       a = a * a;
       float swell = sin(a * 3.14159);
       pos.x += a * uViewport.x * 1.3;
-      pos.y += a * uViewport.y * 0.12 + swell * uViewport.y * 0.04 * (uv.y - 0.5);
-      pos.z += swell * uAmp * 0.9
-        + swell * uAmp * 0.4 * sin(uv.x * 9.0 - uTime * 9.0 + uv.y * 2.5);
+      pos.y += a * uViewport.y * 0.12;
+      pos.z += swell * uAmp * 0.6
+        + swell * uAmp * 0.2 * sin(uv.x * 6.0 - uTime * 6.0 + uv.y * 2.0);
     }
 
     vPos = pos;
@@ -143,7 +143,7 @@ export function playCloth({
 }: {
   host: HTMLElement;
   image: HTMLImageElement;
-  from: DOMRect;
+  from: { left: number; top: number; width: number; height: number };
   onCovered: () => void;
 }): ClothHandle {
   const W = window.innerWidth;
@@ -289,6 +289,8 @@ export function playCloth({
     material.uniforms.uTime.value = t;
     material.uniforms.uAway.value = away.a;
     material.uniforms.uEnv.value = Math.sin(Math.PI * Math.min(1, away.a * 1.4));
+    // Fade out over the second half of the pull.
+    renderer.domElement.style.opacity = String(Math.min(1, (1 - away.a) * 2));
     renderer.render(scene, camera);
   };
 

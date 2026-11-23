@@ -10,7 +10,7 @@ gsap.registerPlugin(useGSAP);
 let lastShown: number | null = null;
 
 /** Seconds to wait so the roll plays as the cloth uncovers this corner. */
-const DELAY = 0.9;
+const DELAY = 0.6;
 
 /**
  * The big project number, bottom left. Arriving from another project, each
@@ -58,15 +58,11 @@ export default function ProjectNumber({ value }: { value: number }) {
         slot.appendChild(out);
         added.push(out);
 
-        tl.fromTo(
-          out,
-          { yPercent: 0, opacity: 1 },
-          { yPercent: -130, opacity: 0, color: "#e8d9d4" },
-          0
-        );
-        if (current) {
-          tl.fromTo(current, { yPercent: 130, opacity: 0 }, { yPercent: 0, opacity: 1 }, 0);
-        }
+        // As in the Figma frame: the old digit slides up and out, turning
+        // pale, while the new one slides up from below in full colour. No
+        // fades, so both stay solid while they pass each other.
+        tl.fromTo(out, { yPercent: 0 }, { yPercent: -140, color: "#e8d9d4" }, 0);
+        if (current) tl.fromTo(current, { yPercent: 140 }, { yPercent: 0 }, 0);
       });
 
       return () => {

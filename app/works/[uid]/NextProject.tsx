@@ -3,15 +3,17 @@
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import gsap from "gsap";
+import { OVERLAY_ID, loadCloth, startCloth } from "@/components/clothNav";
 
 /**
  * Leads a project page on to the next project.
  *
  * Nothing extra is shown or scrolled. When the visitor has reached the end
  * of the page (the last screenshot in view), the next scroll down plays the
- * same zoom as clicking a Works card: the next project's cover appears where
- * the last screenshot is and grows to fill the screen, then the next project
- * opens under it. PageTransition fades the image away once it has rendered.
+ * same cloth as clicking a Works card: the next project's cover lifts off
+ * where the last screenshot is and billows up to fill the screen, then the
+ * next project opens under it and PageTransition sends the sheet off to the right.
+ * Without WebGL it falls back to a plain zoom and fade.
  *
  * The next cover is preloaded on arrival so the zoom shows it straight away.
  * The data-next-project marker also hides the footer on this page (see
@@ -22,8 +24,6 @@ import gsap from "gsap";
  * and End. Reduced motion opens the next project without the zoom.
  */
 
-/** Same id as in PageTransition, which removes it on the next page. */
-const OVERLAY_ID = "page-transition";
 
 export default function NextProject({
   href,
@@ -36,8 +36,13 @@ export default function NextProject({
 
   useEffect(() => {
     router.prefetch(href);
+    // Same CORS mode as the cloth's texture load, so that one hits the cache.
     const preload = new Image();
+    preload.crossOrigin = "anonymous";
     preload.src = image;
+    if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      void loadCloth().catch(() => {});
+    }
 
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     let leaving = false;
@@ -75,6 +80,17 @@ export default function NextProject({
             height: window.innerHeight * 0.4,
           };
 
+      void startCloth({
+        from: start,
+        src: image,
+        onCovered: () => router.push(href),
+      }).then((started) => {
+        if (!started) zoom(start);
+      });
+    };
+
+    // Fallback: the plain zoom, faded in over the last screenshot.
+    const zoom = (start: { left: number; top: number; width: number; height: number }) => {
       const overlay = document.createElement("div");
       overlay.id = OVERLAY_ID;
       overlay.setAttribute("aria-hidden", "true");
