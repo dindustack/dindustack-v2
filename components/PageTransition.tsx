@@ -11,8 +11,8 @@ type ClothModule = typeof import("./clothTransition");
 let clothModule: Promise<ClothModule> | null = null;
 const loadCloth = () => (clothModule ??= import("./clothTransition"));
 
-/** Tears down the running cloth canvas once its overlay has faded. */
-let disposeCloth: (() => void) | null = null;
+/** The running cloth sheet, flown away and torn down once the new page is in. */
+let activeCloth: import("./clothTransition").ClothHandle | null = null;
 /** The card image hidden while the cloth lifts off it. */
 let hiddenFrame: HTMLElement | null = null;
 
@@ -163,7 +163,7 @@ export default function PageTransition() {
             from: rect,
             onCovered: () => router.push(href),
           });
-          disposeCloth = handle.dispose;
+          activeCloth = handle;
 
           // The sheet now sits over the card; hide the card so nothing is
           // left behind as it lifts off.
@@ -182,15 +182,29 @@ export default function PageTransition() {
   // The route has changed: fade the covering image away to reveal the page.
   useEffect(() => {
     const overlay = document.getElementById(OVERLAY_ID);
-    if (overlay) {
+    const cloth = activeCloth;
+    if (overlay && cloth) {
+      // Cloth: once the new page has rendered beneath it, the sheet is
+      // pulled off to the right, revealing the project.
+      activeCloth = null;
+      window.setTimeout(() => {
+        void cloth.flyAway().then(() => {
+          cloth.dispose();
+          if (hiddenFrame) {
+            hiddenFrame.style.visibility = "";
+            hiddenFrame = null;
+          }
+          overlay.remove();
+          busy.current = false;
+        });
+      }, 200);
+    } else if (overlay) {
       gsap.to(overlay, {
         autoAlpha: 0,
         duration: 0.6,
         delay: 0.2,
         ease: "power2.out",
         onComplete: () => {
-          disposeCloth?.();
-          disposeCloth = null;
           if (hiddenFrame) {
             hiddenFrame.style.visibility = "";
             hiddenFrame = null;

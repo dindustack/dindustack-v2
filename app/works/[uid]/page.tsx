@@ -6,6 +6,7 @@ import { PrismicNextImage, PrismicNextLink } from "@prismicio/next";
 import { createClient } from "@/prismicio";
 import ProjectGallery from "./ProjectGallery";
 import NextProject from "./NextProject";
+import ProjectNumber from "./ProjectNumber";
 
 type Params = { uid: string };
 
@@ -41,26 +42,28 @@ export default async function ProjectPage({
         className="relative bg-blush text-ink lg:h-svh lg:overflow-hidden"
       >
         <ProjectGallery count={gallery.length}>
-          <div className="flex flex-col gap-12 px-[var(--gutter)] pb-10 pt-30 lg:absolute lg:inset-x-0 lg:bottom-[22.2svh] lg:flex-row lg:items-start lg:gap-0 lg:p-0 lg:pl-[9.72vw]">
-            {/*
-              Outlined title: an ink outline with a thin white halo, so it
-              reads on blush, on dark screenshots and on mid-tones alike. On desktop it sits above the row and runs into
-              the first screenshot: first word, then the rest stepped in.
-              Measured from the 1728 frame: 152px type on 108px lines, its
-              top 110px above the screenshots.
-            */}
-            <h1
-              data-animate="detail"
-              className="font-bold text-[clamp(56px,8.8vw,152px)] leading-[0.85] lg:leading-[0.71] tracking-[-0.04em] text-transparent [-webkit-text-stroke:1px_var(--color-ink)] [filter:drop-shadow(0_0_0.6px_#fff)_drop-shadow(0_0_0.6px_#fff)] lg:pointer-events-none lg:absolute lg:left-[9.72vw] lg:top-[-6.37vw] lg:z-10"
-            >
-              <TitleLines title={project.data.title ?? ""} />
-            </h1>
+          {/* Big pale title behind the page, top left; the screenshots
+              pass over it. Decorative: the real heading is in the column. */}
+          <p
+            aria-hidden
+            className="pointer-events-none absolute left-[3.94vw] top-0 hidden whitespace-nowrap font-bold text-[14.47vw] leading-[1.15] tracking-[-0.04em] text-[#e8d9d4] lg:block"
+          >
+            {project.data.title}
+          </p>
 
-            <div className="flex w-full max-w-93.25 flex-col gap-10.5 lg:w-[max(21.59vw,280px)] lg:max-w-none lg:shrink-0 lg:pt-[3.125vw]">
+          <div className="flex flex-col gap-12 px-[var(--gutter)] pb-10 pt-30 lg:absolute lg:inset-x-0 lg:bottom-[17.5svh] lg:flex-row lg:items-start lg:gap-0 lg:p-0 lg:pl-[3.94vw]">
+
+            <div className="flex w-full max-w-102.5 flex-col gap-10.5 lg:w-[max(23.73vw,300px)] lg:max-w-none lg:shrink-0 lg:gap-[9.26vw] lg:pt-[3.125vw]">
+
               <div className="flex flex-col gap-4.75">
-                {project.data.year ? (
-                  <p data-animate="detail">{project.data.year}</p>
-                ) : null}
+                <div data-animate="detail" className="flex flex-col gap-6">
+                  <h1 className="font-bold text-[clamp(40px,3.7vw,64px)] leading-[0.9] tracking-[-0.04em] text-[#222]">
+                    {project.data.title}
+                  </h1>
+                  {project.data.year ? (
+                    <p className="text-[24px] leading-none">{project.data.year}</p>
+                  ) : null}
+                </div>
 
                 {isFilled.richText(project.data.summary) ? (
                   <div data-animate="detail" className="text-prose leading-[1.45]">
@@ -108,7 +111,7 @@ export default async function ProjectPage({
           </div>
 
           {/*
-            Thumbnails of the screenshots, bottom left. Each scrolls the
+            Thumbnails of the screenshots, bottom right. Each scrolls the
             strip to its screenshot (ProjectGallery wires the clicks and
             marks the one in view). Desktop only: below lg the screenshots
             simply stack.
@@ -116,7 +119,7 @@ export default async function ProjectPage({
           {gallery.length > 1 ? (
             <ul
               aria-label="Screenshots"
-              className="absolute bottom-4.25 left-3.25 hidden items-end gap-0.75 lg:flex"
+              className="absolute bottom-4.25 right-[var(--gutter)] hidden items-end gap-0.75 lg:flex"
             >
               {gallery.map((item, i) => (
                 <li key={i}>
@@ -141,22 +144,16 @@ export default async function ProjectPage({
             </ul>
           ) : null}
 
-          {/* Big project number, bottom right, above the pager. */}
-          {position >= 0 ? (
-            <p
-              aria-hidden
-              className="hidden font-bold text-[clamp(64px,8.8vw,152px)] leading-[0.71] tracking-[-0.04em] text-black lg:absolute lg:bottom-[calc(1.5rem+21px+0.6vw)] lg:right-[var(--gutter)] lg:block"
-            >
-              {String(position + 1).padStart(2, "0")}
-            </p>
-          ) : null}
+          {/* Big project number, bottom left above the pager. It rolls
+              from the previous project's number on arrival. */}
+          {position >= 0 ? <ProjectNumber value={position + 1} /> : null}
 
           <nav
             aria-label="Projects"
-            className="flex items-center gap-0.5 px-[var(--gutter)] pb-10 text-[14px] font-bold leading-none text-umber lg:absolute lg:bottom-6 lg:right-[var(--gutter)] lg:p-0"
+            className="flex items-center gap-0.5 px-[var(--gutter)] pb-10 text-[14px] font-bold leading-none text-umber lg:absolute lg:bottom-6 lg:left-[3.94vw] lg:p-0"
           >
             <span aria-hidden className="tracking-nav">Project</span>
-            <span aria-hidden className="tracking-nav">-</span>
+            <span aria-hidden className="mx-1 h-px w-23 bg-umber" />
             {/* Each number is a 24px target; the boxes touch, which keeps
                 the numbers evenly spaced without extra gap. */}
             <ul className="flex items-center">
@@ -187,28 +184,6 @@ export default async function ProjectPage({
           image={asImageSrc(next.data.cover, { w: 2400 }) ?? ""}
         />
       ) : null}
-    </>
-  );
-}
-
-/**
- * The title as the design sets it: the first word on its own line, the rest
- * on a second line stepped in. One-word titles stay on one line. Screen
- * readers get the plain title.
- */
-function TitleLines({ title }: { title: string }) {
-  const [first, ...rest] = title.trim().split(/\s+/);
-  if (!rest.length) return <>{first}</>;
-  return (
-    <>
-      <span className="block">{first}</span>
-      {/* The same step for every project, as in Figma: 373px at 152px
-          type. Short first words leave a gap and long ones overlap; the
-          title may run over the text beneath it. */}
-      <span className="block lg:pl-[2.45em]">
-        {" "}
-        {rest.join(" ")}
-      </span>
     </>
   );
 }

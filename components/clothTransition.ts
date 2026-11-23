@@ -42,6 +42,9 @@ const PULL = 70;
 const DAMPING = 7;
 
 export type ClothHandle = {
+  /** Pulls the flat, full-screen sheet off to the right like cloth,
+   *  revealing what is underneath. Resolves once it is off screen. */
+  flyAway: () => Promise<void>;
   /** Removes the canvas's GPU resources. The caller removes the element. */
   dispose: () => void;
 };
@@ -60,6 +63,9 @@ const vertex = /* glsl */ `
   uniform vec4 uFrom;      // left, top, width, height in CSS px
   uniform vec4 uTo;
   uniform vec2 uViewport;
+  uniform float uAway;     // 0..1, the sheet being pulled off to the right
+  uniform float uTime;
+  uniform float uAmp;
   attribute float aZ;
   varying vec2 vUv;
   varying vec3 vPos;
@@ -79,6 +85,19 @@ const vertex = /* glsl */ `
     // Depth from the cloth simulation, forced to zero as the lift ends so
     // the last frame matches the flat full-screen image exactly.
     pos.z = aZ * uFlat;
+
+    // Fly away: the right edge is pulled first and the rest follows, so
+    // the sheet stretches, lifts and ripples as it whips off the screen.
+    if (uAway > 0.0) {
+      float lag = (1.0 - uv.x) * 0.5 + abs(uv.y - 0.5) * 0.2;
+      float a = clamp(uAway * 1.7 - lag, 0.0, 1.0);
+      a = a * a;
+      float swell = sin(a * 3.14159);
+      pos.x += a * uViewport.x * 1.3;
+      pos.y += a * uViewport.y * 0.12 + swell * uViewport.y * 0.04 * (uv.y - 0.5);
+      pos.z += swell * uAmp * 0.9
+        + swell * uAmp * 0.4 * sin(uv.x * 9.0 - uTime * 9.0 + uv.y * 2.5);
+    }
 
     vPos = pos;
     gl_Position = projectionMatrix * modelViewMatrix * vec4(pos, 1.0);
@@ -166,6 +185,9 @@ export function playCloth({
       uProgress: { value: 0 },
       uEnv: { value: 0 },
       uFlat: { value: 1 },
+      uAway: { value: 0 },
+      uTime: { value: 0 },
+      uAmp: { value: 0 },
     },
   });
 
@@ -185,6 +207,7 @@ export function playCloth({
 
   // How far towards the viewer the middle of the sheet billows.
   const amp = Math.min(W, H) * 0.22;
+  material.uniforms.uAmp.value = amp;
 
   // Per-point distance from the centre, in uv, for the billow shape.
   const dist = new Float32Array(count);
@@ -259,8 +282,36 @@ export function playCloth({
     },
   });
 
+  const away = { a: 0 };
+  let awayTween: gsap.core.Tween | null = null;
+  let awayFrame: (() => void) | null = null;
+  const drawAway = (t: number) => {
+    material.uniforms.uTime.value = t;
+    material.uniforms.uAway.value = away.a;
+    material.uniforms.uEnv.value = Math.sin(Math.PI * Math.min(1, away.a * 1.4));
+    renderer.render(scene, camera);
+  };
+
   return {
+    flyAway: () =>
+      new Promise<void>((resolve) => {
+        const start = performance.now();
+        const frame = () => drawAway((performance.now() - start) / 1000);
+        awayFrame = frame;
+        gsap.ticker.add(frame);
+        awayTween = gsap.to(away, {
+          a: 1,
+          duration: 1.1,
+          ease: "power1.in",
+          onComplete: () => {
+            gsap.ticker.remove(frame);
+            resolve();
+          },
+        });
+      }),
     dispose: () => {
+      awayTween?.kill();
+      if (awayFrame) gsap.ticker.remove(awayFrame);
       tween.kill();
       gsap.ticker.remove(tick);
       geometry.dispose();
