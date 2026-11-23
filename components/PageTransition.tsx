@@ -6,6 +6,34 @@ import gsap from "gsap";
 
 const OVERLAY_ID = "page-transition";
 
+/** The cloth effect and three.js, loaded only when a page has project links. */
+type ClothModule = typeof import("./clothTransition");
+let clothModule: Promise<ClothModule> | null = null;
+const loadCloth = () => (clothModule ??= import("./clothTransition"));
+
+/** Tears down the running cloth canvas once its overlay has faded. */
+let disposeCloth: (() => void) | null = null;
+/** The card image hidden while the cloth lifts off it. */
+let hiddenFrame: HTMLElement | null = null;
+
+/** Loads a CORS-clean copy of the image for WebGL, or fails within 800ms. */
+function loadTextureImage(src: string): Promise<HTMLImageElement> {
+  return new Promise((resolve, reject) => {
+    const image = new Image();
+    image.crossOrigin = "anonymous";
+    const timer = window.setTimeout(() => reject(new Error("timeout")), 800);
+    image.onload = () => {
+      window.clearTimeout(timer);
+      resolve(image);
+    };
+    image.onerror = () => {
+      window.clearTimeout(timer);
+      reject(new Error("image"));
+    };
+    image.src = src;
+  });
+}
+
 /**
  * Image-zoom page transition, mounted once in the root layout.
  *
@@ -68,42 +96,83 @@ export default function PageTransition() {
       router.prefetch(href);
 
       const rect = frame.getBoundingClientRect();
-      const overlay = document.createElement("div");
-      overlay.id = OVERLAY_ID;
-      overlay.setAttribute("aria-hidden", "true");
-      Object.assign(overlay.style, {
-        position: "fixed",
-        left: `${rect.left}px`,
-        top: `${rect.top}px`,
-        width: `${rect.width}px`,
-        height: `${rect.height}px`,
-        overflow: "hidden",
-        zIndex: "60",
-        pointerEvents: "none",
-      });
+      const src = img.currentSrc || img.src;
 
-      const copy = document.createElement("img");
-      copy.src = img.currentSrc || img.src;
-      copy.alt = "";
-      Object.assign(copy.style, {
-        display: "block",
-        width: "100%",
-        height: "100%",
-        objectFit: "cover",
-      });
+      // The plain zoom: a copy of the image grows to fill the screen.
+      const zoom = () => {
+        const overlay = document.createElement("div");
+        overlay.id = OVERLAY_ID;
+        overlay.setAttribute("aria-hidden", "true");
+        Object.assign(overlay.style, {
+          position: "fixed",
+          left: `${rect.left}px`,
+          top: `${rect.top}px`,
+          width: `${rect.width}px`,
+          height: `${rect.height}px`,
+          overflow: "hidden",
+          zIndex: "60",
+          pointerEvents: "none",
+        });
 
-      overlay.appendChild(copy);
-      document.body.appendChild(overlay);
+        const copy = document.createElement("img");
+        copy.src = img.currentSrc || img.src;
+        copy.alt = "";
+        Object.assign(copy.style, {
+          display: "block",
+          width: "100%",
+          height: "100%",
+          objectFit: "cover",
+        });
 
-      gsap.to(overlay, {
-        left: 0,
-        top: 0,
-        width: "100vw",
-        height: "100vh",
-        duration: 0.9,
-        ease: "power3.inOut",
-        onComplete: () => router.push(href),
-      });
+        overlay.appendChild(copy);
+        document.body.appendChild(overlay);
+
+        gsap.to(overlay, {
+          left: 0,
+          top: 0,
+          width: "100vw",
+          height: "100vh",
+          duration: 0.9,
+          ease: "power3.inOut",
+          onComplete: () => router.push(href),
+        });
+      };
+
+      // Cloth first; if WebGL, the module or the image is not available in
+      // time, fall back to the plain zoom above.
+      (async () => {
+        try {
+          const cloth = await loadCloth();
+          if (!cloth.supportsCloth()) throw new Error("webgl");
+          const image = await loadTextureImage(src);
+
+          const host = document.createElement("div");
+          host.id = OVERLAY_ID;
+          host.setAttribute("aria-hidden", "true");
+          Object.assign(host.style, {
+            position: "fixed",
+            inset: "0",
+            zIndex: "60",
+            pointerEvents: "none",
+          });
+          document.body.appendChild(host);
+
+          const handle = cloth.playCloth({
+            host,
+            image,
+            from: rect,
+            onCovered: () => router.push(href),
+          });
+          disposeCloth = handle.dispose;
+
+          // The sheet now sits over the card; hide the card so nothing is
+          // left behind as it lifts off.
+          frame.style.visibility = "hidden";
+          hiddenFrame = frame;
+        } catch {
+          zoom();
+        }
+      })();
     };
 
     document.addEventListener("click", onClick, true);
@@ -120,10 +189,24 @@ export default function PageTransition() {
         delay: 0.2,
         ease: "power2.out",
         onComplete: () => {
+          disposeCloth?.();
+          disposeCloth = null;
+          if (hiddenFrame) {
+            hiddenFrame.style.visibility = "";
+            hiddenFrame = null;
+          }
           overlay.remove();
           busy.current = false;
         },
       });
+    }
+
+    // Warm up the cloth effect while the visitor looks at the projects, so
+    // a click does not wait for it to download.
+    if (document.querySelector("a[data-transition]")) {
+      const idle =
+        window.requestIdleCallback ?? ((cb: () => void) => window.setTimeout(cb, 1500));
+      idle(() => void loadCloth().catch(() => {}));
     }
 
     // The ink curtain from the homepage hero (slices/Hero/ScrollToWorks).
