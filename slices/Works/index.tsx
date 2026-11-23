@@ -76,7 +76,7 @@ const Works = async ({ slice }: WorksProps) => {
               >
                 <div
                   data-transition-image
-                  className="relative aspect-[784/500] w-full overflow-hidden lg:aspect-auto lg:h-[var(--h)] lg:[filter:blur(var(--b))]"
+                  className="relative aspect-[784/500] w-full overflow-hidden lg:aspect-auto lg:h-[var(--h)]"
                 >
                   {isFilled.image(project.data.cover) ? (
                     <PrismicNextImage
@@ -85,7 +85,7 @@ const Works = async ({ slice }: WorksProps) => {
                       priority={i === 0}
                       draggable={false}
                       sizes="(min-width: 1024px) 46vw, 100vw"
-                      className="object-cover transition-transform duration-700 group-hover:scale-[1.03]"
+                      className="object-cover transition-transform duration-700 group-hover:scale-[1.03] lg:[filter:blur(var(--b))]"
                     />
                   ) : null}
                 </div>
