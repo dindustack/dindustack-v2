@@ -1,5 +1,5 @@
 import { FC } from "react";
-import { Content, asHTML, isFilled } from "@prismicio/client";
+import { Content, asHTML, asImageSrc, isFilled } from "@prismicio/client";
 import { SliceComponentProps } from "@prismicio/react";
 import { PrismicNextImage } from "@prismicio/next";
 import HeroMotion from "./HeroMotion";
@@ -67,17 +67,20 @@ const Hero: FC<HeroProps> = ({ slice }) => {
                   .filter((item) => isFilled.image(item.image))
                   .slice(0, 10)
                   .map((item, i) => (
-                    <PrismicNextImage
+                    // Plain img with no src: HeroMotion sets it once the
+                    // portrait has loaded. Already grey and small from
+                    // Prismic's image service (sat=-100), so each is light.
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
                       key={i}
-                      field={item.image}
-                      fill
                       alt=""
                       aria-hidden
                       data-flash
-                      loading="eager"
-                      fetchPriority="low"
-                      sizes="(min-width: 1024px) 316px, 260px"
-                      className="invisible object-cover grayscale"
+                      data-src={
+                        asImageSrc(item.image, { w: 632, q: 55, sat: -100 }) ?? undefined
+                      }
+                      decoding="async"
+                      className="invisible absolute inset-0 h-full w-full object-cover grayscale"
                     />
                   ))}
               </div>

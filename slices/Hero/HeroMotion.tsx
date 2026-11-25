@@ -44,7 +44,7 @@ export default function HeroMotion({
         gsap.set(pending, { visibility: "visible" });
       });
 
-      mm.add("(prefers-reduced-motion: no-preference)", () => {
+      mm.add("(prefers-reduced-motion: no-preference)", (ctx) => {
         const name = scope.querySelector<HTMLElement>("[data-animate='name']");
         const intros = Array.from(
           scope.querySelectorAll<HTMLElement>("[data-animate='intro']")
@@ -61,80 +61,110 @@ export default function HeroMotion({
           SplitText.create(el, { type: "chars,words", aria: "hidden" })
         );
 
-        const tl = gsap.timeline({
-          defaults: { ease: "power3.out" },
-          onComplete: () => {
-            // Hand back plain text, so the exit ripple in ScrollToWorks can
-            // split the name afresh and text wraps normally on resize.
-            nameSplit?.revert();
-            introSplits.forEach((s) => s.revert());
-          },
-        });
-
+        // Hide the letters now; the timeline below is built a moment later,
+        // once the flash pictures are ready.
+        if (nameSplit) gsap.set(nameSplit.chars, { yPercent: 150, autoAlpha: 0 });
+        introSplits.forEach((split) => gsap.set(split.chars, { autoAlpha: 0 }));
         gsap.set(pending, { visibility: "visible" });
 
-        // 1. Pictures flash through the portrait box, about 150ms each,
-        //    then the last one goes and the portrait underneath remains.
-        const flashes = Array.from(
-          scope.querySelectorAll<HTMLElement>("[data-flash]")
-        );
-        // Seconds each picture stays up. 0.1 felt too fast.
-        const STEP = 0.15;
-        flashes.forEach((img, i) => {
-          tl.set(img, { visibility: "visible" }, i * STEP);
-          if (i > 0) tl.set(flashes[i - 1], { visibility: "hidden" }, i * STEP);
-        });
-        const flashEnd = flashes.length * STEP;
-        if (flashes.length) {
-          tl.set(flashes[flashes.length - 1], { visibility: "hidden" }, flashEnd);
-        }
+        let tl: gsap.core.Timeline | null = null;
+        let finishedEarly = false;
+        let cancelled = false;
 
-        // 2. The name starts as the flashing is about to end and takes
-        //    about a second.
-        const nameStart = flashes.length ? Math.max(0, flashEnd - 0.2) : 0.3;
-        const NAME_STAGGER = 0.035;
-        const NAME_DURATION = 0.5;
-        let nameEnd = nameStart;
-
-        if (nameSplit) {
-          // Each letter is invisible until its own turn, then fades in as
-          // it slides up, so no part of it shows while it waits.
-          gsap.set(nameSplit.chars, { yPercent: 150, autoAlpha: 0 });
-          tl.to(
-            nameSplit.chars,
-            {
-              yPercent: 0,
-              autoAlpha: 1,
-              duration: NAME_DURATION,
-              stagger: NAME_STAGGER,
+        const build = (flashes: HTMLImageElement[]) => {
+          tl = gsap.timeline({
+            defaults: { ease: "power3.out" },
+            onComplete: () => {
+              // Hand back plain text, so the exit ripple in ScrollToWorks
+              // can split the name afresh and text wraps normally on resize.
+              nameSplit?.revert();
+              introSplits.forEach((split) => split.revert());
             },
-            nameStart
-          );
-          nameEnd =
-            nameStart +
-            (nameSplit.chars.length - 1) * NAME_STAGGER +
-            NAME_DURATION;
-        }
+          });
 
-        // 3. Once the name has fully landed, the write-up types out: each
-        // character appears at once, in order, each block in about two
-        // seconds whatever its length.
-        let at = nameEnd;
-        introSplits.forEach((split) => {
-          const chars = split.chars;
-          if (!chars.length) return;
-          const each = Math.min(0.035, 2 / chars.length);
-          tl.from(
-            chars,
-            { autoAlpha: 0, duration: 0.01, ease: "none", stagger: each },
-            at
-          );
-          at += chars.length * each;
+          // 1. Pictures flash through the portrait box, about 150ms each,
+          //    then the last one goes and the portrait underneath remains.
+          const STEP = 0.15;
+          flashes.forEach((img, i) => {
+            tl!.set(img, { visibility: "visible" }, i * STEP);
+            if (i > 0) tl!.set(flashes[i - 1], { visibility: "hidden" }, i * STEP);
+          });
+          const flashEnd = flashes.length * STEP;
+          if (flashes.length) {
+            tl.set(flashes[flashes.length - 1], { visibility: "hidden" }, flashEnd);
+          }
+
+          // 2. The name starts as the flashing is about to end and takes
+          //    about a second.
+          const nameStart = flashes.length ? Math.max(0, flashEnd - 0.2) : 0.1;
+          const NAME_STAGGER = 0.035;
+          const NAME_DURATION = 0.5;
+          let nameEnd = nameStart;
+          if (nameSplit) {
+            tl.to(
+              nameSplit.chars,
+              { yPercent: 0, autoAlpha: 1, duration: NAME_DURATION, stagger: NAME_STAGGER },
+              nameStart
+            );
+            nameEnd = nameStart + (nameSplit.chars.length - 1) * NAME_STAGGER + NAME_DURATION;
+          }
+
+          // 3. Once the name has fully landed, the write-up types out: each
+          // character appears at once, in order, each block in about two
+          // seconds whatever its length.
+          let at = nameEnd;
+          introSplits.forEach((split) => {
+            const chars = split.chars;
+            if (!chars.length) return;
+            const each = Math.min(0.035, 2 / chars.length);
+            tl!.to(chars, { autoAlpha: 1, duration: 0.01, ease: "none", stagger: each }, at);
+            at += chars.length * each;
+          });
+
+          if (finishedEarly) tl.progress(1);
+        };
+
+        // The flash pictures are not requested until the portrait (the
+        // page's largest image, which load-speed scores time) has loaded,
+        // so they never compete with it for bandwidth. The intro waits at
+        // most 1.5s for them; any that are not ready by then are skipped.
+        const portrait = scope.querySelector<HTMLImageElement>(
+          "[data-animate='portrait'] img:not([data-flash])"
+        );
+        const flashes = Array.from(
+          scope.querySelectorAll<HTMLImageElement>("img[data-flash]")
+        );
+        const wait = (ms: number) => new Promise<void>((r) => setTimeout(r, ms));
+        const loaded = (img: HTMLImageElement | null) =>
+          new Promise<void>((resolve) => {
+            if (!img || (img.complete && img.naturalWidth > 0)) return resolve();
+            img.addEventListener("load", () => resolve(), { once: true });
+            img.addEventListener("error", () => resolve(), { once: true });
+          });
+
+        const prepare = async () => {
+          await loaded(portrait);
+          flashes.forEach((img) => {
+            if (img.dataset.src && !img.src) img.src = img.dataset.src;
+          });
+          await Promise.allSettled(flashes.map((img) => img.decode()));
+        };
+
+        void Promise.race([flashes.length ? prepare() : Promise.resolve(), wait(1500)]).then(() => {
+          if (cancelled) return;
+          const ready = flashes.filter((img) => img.complete && img.naturalWidth > 0);
+          ctx.add(() => build(ready));
         });
 
-        const finish = () => tl.progress(1);
+        const finish = () => {
+          if (tl) tl.progress(1);
+          else finishedEarly = true;
+        };
         window.addEventListener(FINISH_INTRO, finish);
-        return () => window.removeEventListener(FINISH_INTRO, finish);
+        return () => {
+          cancelled = true;
+          window.removeEventListener(FINISH_INTRO, finish);
+        };
       });
 
       return () => mm.revert();
