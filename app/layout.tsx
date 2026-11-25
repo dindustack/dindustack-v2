@@ -38,7 +38,7 @@ const merriweather = Merriweather({
 
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://dindustack.com"),
+  metadataBase: new URL("https://www.dindustack.com"),
   // Each page sets its own title; this adds the name after it.
   title: { default: "Chinwendu Agbaetuo", template: "%s | Chinwendu Agbaetuo" },
   description: "Creative developer in Texas",
