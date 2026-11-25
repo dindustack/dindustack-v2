@@ -6,6 +6,7 @@ import SmoothScroller from "@/components/SmoothScroller";
 import Nav from "@/components/Nav";
 import PageTransition from "@/components/PageTransition";
 import Footer from "@/components/Footer";
+import Analytics from "@/components/Analytics";
 import "./globals.css";
 
 const marcellus = Marcellus({
@@ -74,6 +75,7 @@ export default function RootLayout({
         </SmoothScroller>
       </body>
       <PrismicPreview repositoryName={repositoryName} />
+      <Analytics />
     </html>
   );
 }
