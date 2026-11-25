@@ -17,4 +17,16 @@ export default async function About() {
   );
 }
 
-export const metadata: Metadata = { title: "About" };
+/** SEO from the About page's Page data tab in Prismic. */
+export async function generateMetadata(): Promise<Metadata> {
+  const client = createClient();
+  const page = await client.getSingle("about");
+
+  return {
+    title: page.data.meta_title || "About",
+    description: page.data.meta_description || undefined,
+    openGraph: page.data.meta_image.url
+      ? { images: [{ url: page.data.meta_image.url }] }
+      : undefined,
+  };
+}
