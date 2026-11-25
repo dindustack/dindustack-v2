@@ -1,8 +1,8 @@
 "use client";
 import { Content, isFilled } from "@prismicio/client";
 import { PrismicRichText, SliceComponentProps } from "@prismicio/react";
-import { PrismicNextImage } from "@prismicio/next";
 import AboutMotion from "./AboutMotion";
+import BlurUpImage from "@/components/BlurUpImage";
 
 export type AboutProps = SliceComponentProps<Content.AboutSlice>;
 
@@ -49,13 +49,10 @@ const About = ({ slice }: AboutProps) => {
                     key={i}
                     className="relative aspect-3/4 w-full shrink-0 overflow-hidden max-lg:snap-start"
                   >
-                    <PrismicNextImage
+                    <BlurUpImage
                       field={item.image}
-                      fill
-                      loading={i === 0 ? "eager" : "lazy"}
-                      fetchPriority={i === 0 ? "high" : "auto"}
+                      eager={i === 0}
                       sizes="(min-width: 1024px) 540px, 100vw"
-                      className="object-cover"
                     />
                   </div>
                 ) : null,

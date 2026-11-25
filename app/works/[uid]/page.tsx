@@ -7,6 +7,7 @@ import { createClient } from "@/prismicio";
 import ProjectGallery from "./ProjectGallery";
 import NextProject from "./NextProject";
 import ProjectNumber from "./ProjectNumber";
+import BlurUpImage from "@/components/BlurUpImage";
 
 type Params = { uid: string };
 
@@ -97,12 +98,10 @@ export default async function ProjectPage({
                     key={i}
                     className="relative aspect-1033/603 w-full shrink-0 overflow-hidden bg-white shadow-[8px_3px_39px_7px_rgba(150,150,150,0.2)] lg:h-[min(34.9vw,62svh)] lg:w-auto"
                   >
-                    <PrismicNextImage
+                    <BlurUpImage
                       field={item.image}
-                      fill
-                      priority={i === 0}
+                      eager={i === 0}
                       sizes="(min-width: 1024px) 60vw, 100vw"
-                      className="object-cover"
                     />
                   </div>
                 ))}
